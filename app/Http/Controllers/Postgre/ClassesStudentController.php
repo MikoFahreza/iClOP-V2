@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Postgre;
 
-use App\Classes;
-use App\ClassesStudent;
-use App\User;
+use App\Models\Postgre\Classes;
+use App\Models\Postgre\ClassesStudent;
+use App\Models\Postgre\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;

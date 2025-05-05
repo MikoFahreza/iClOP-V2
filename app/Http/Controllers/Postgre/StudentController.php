@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Postgre;
 
-use App\Exercise;
-use App\ExerciseQuestion;
-use App\Submission;
+use App\Models\Postgre\Exercise;
+use App\Models\Postgre\ExerciseQuestion;
+use App\Models\Postgre\Submission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -15,25 +15,25 @@ class StudentController extends Controller
 {
     public function dashboard()
     {
-        return view('user.student.dashboard');
+        return view('postgre.user.student.dashboard');
     }
 
     public function exercise()
     {
         $exercise = Exercise::with('year')->get();
-        return view('user.student.exercise.index', compact('exercise'));
+        return view('postgre.user.student.exercise.index', compact('exercise'));
     }
 
     public function exerciseQuestion(Request $request)
     {
         $exercise_id = $request->exercise_id;
-        return view('user.student.exercise_question.index', compact('exercise_id'));
+        return view('postgre.user.student.exercise_question.index', compact('exercise_id'));
     }
 
     public function result()
     {
         $exercise = Exercise::with('year')->get();
-        return view('user.student.result.index', compact('exercise'));
+        return view('postgre.user.student.result.index', compact('exercise'));
     }
 
     public function resultByExercise(Request $request)
@@ -47,7 +47,7 @@ class StudentController extends Controller
             
         $question = DB::table('exercise_question')->where('exercise_id', 1)->get()->count();
         $result = floor(($passed / $question) * 100);
-        return view('user.student.result.resultByExercise', compact('exercise_id', 'passed', 'question', 'result'));
+        return view('postgre.user.student.result.resultByExercise', compact('exercise_id', 'passed', 'question', 'result'));
     }
 
     public function getResultByExerciseDataTable(Request $request)

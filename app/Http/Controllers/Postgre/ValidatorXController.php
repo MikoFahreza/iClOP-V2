@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Postgre;
 
-use App\Question;
-use App\Submission;
+use App\Models\Postgre\Question;
+use App\Models\Postgre\Submission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 

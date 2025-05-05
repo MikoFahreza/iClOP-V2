@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Postgre;
 
-use App\Classes;
+use App\Models\Postgre\Classes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 

@@ -1,13 +1,14 @@
 <?php
 
-namespace App;
+namespace App\Models\Postgre;
+
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Teacher extends Model
 {
-    protected $table = 'teacher';
+    protected $table = 'postgre_teacher';
 
     protected $fillable = [
         'user_id',

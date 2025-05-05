@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Postgre;
 
-use App\AcademicYear;
-use App\Classes;
-use App\Exercise;
+use App\Models\Postgre\AcademicYear;
+use App\Models\Postgre\Classes;
+use App\Models\Postgre\Exercise;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -14,13 +14,13 @@ class TeacherController extends Controller
 {
     public function dashboard()
     {
-        return view('user.teacher.dashboard');
+        return view('postgre.user.teacher.dashboard');
     }
 
     public function class()
     {
         $class = Classes::where('teacher_id', 1)->paginate(2);
-        return view('user.teacher.class.index', compact('class'));
+        return view('postgre.user.teacher.class.index', compact('class'));
     }
 
     public function getClassStudent(Request $request)
@@ -37,14 +37,14 @@ class TeacherController extends Controller
 
     public function question()
     {
-        return view('user.teacher.question.index');
+        return view('postgre.user.teacher.question.index');
     }
 
     public function exercise()
     {
         $exercise = Exercise::with('year')->paginate(3);
         $year = AcademicYear::where('status', 'Aktif')->get();
-        return view('user.teacher.exercise.index', compact('exercise', 'year'));
+        return view('postgre.user.teacher.exercise.index', compact('exercise', 'year'));
     }
 
     public function exerciseQuestion(Request $request)
@@ -52,7 +52,7 @@ class TeacherController extends Controller
         $exercise = Exercise::with('year')->paginate(3);
         $year = AcademicYear::where('status', 'Aktif')->get();
         $exercise_id = $request->exercise_id;
-        return view('user.teacher.exerciseQuestion.index',compact('exercise', 'year','exercise_id'));
+        return view('postgre.user.teacher.exerciseQuestion.index',compact('exercise', 'year','exercise_id'));
     }
 
     public function exerciseResult(Request $request)
@@ -64,7 +64,7 @@ class TeacherController extends Controller
             ->where('users.id', Auth::user()->id)
             ->select('class.id', 'class.name')
             ->get();
-        return view('user.teacher.exerciseResult.index', compact('class'));
+        return view('postgre.user.teacher.exerciseResult.index', compact('class'));
     }
 
 }

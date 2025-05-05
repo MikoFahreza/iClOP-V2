@@ -26,10 +26,10 @@ class AuthController extends Controller
         if (Auth::attempt($credential)) {
 
             if (Auth::user()->role == "admin") {
-                return redirect('welcome');
+                return redirect('dashboard-admin');
 
             } else if (Auth::user()->role == "teacher") {
-                return redirect('dashboard_teacher');
+                return redirect('dashboard-teacher');
 
             } else {
                 // student
@@ -59,7 +59,7 @@ class AuthController extends Controller
         return redirect('/');
     }
 
-    public function logoutt(Request $request): RedirectResponse
+    public function logout(Request $request): RedirectResponse
     {
         Auth::logout();
         $request->session()->invalidate();

@@ -45,10 +45,12 @@
                     <img src="{{ asset('./images/Group.png') }}" alt="Group" style="height: 50px; margin-right: 10px;">
                     <i class="fas fa-chevron-down" style="color: #0079FF;"></i>
                     <div class="dropdown-content" id="dropdownContent">
-                        <form id="logout-form" action="{{ route('logoutt') }}" method="POST">
+                        <form id="logout-form" action="{{ route('logout') }}" method="GET" style="display: none;">
                             @csrf
-                            <a href="/" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
                         </form>
+
+                        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
+
 
                     </div>
                 </p>
@@ -175,7 +177,7 @@
                         </div>
                     </div>
                     <div style="margin-top: auto;">
-                        <a href="{{ route('learning_student') }}" class="btn btn-primary">Start Learning</a>
+                    <a href="{{ route('student.dashboard') }}" class="btn btn-primary">Start Learning</a>
                     </div>
                 </div>
             </div>

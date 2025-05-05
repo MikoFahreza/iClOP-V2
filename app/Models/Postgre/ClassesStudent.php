@@ -1,12 +1,12 @@
 <?php
 
-namespace App;
+namespace App\Models\Postgre;
 
 use Illuminate\Database\Eloquent\Model;
 
 class ClassesStudent extends Model
 {
-    protected $table = 'class_student';
+    protected $table = 'postgre_class_student';
 
     protected $fillable = [
         'class_id',

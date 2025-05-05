@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Postgre;
 
-use App\Exercise;
-use App\ExerciseQuestion;
-use App\Question;
+use App\Models\Postgre\Exercise;
+use App\Models\Postgre\ExerciseQuestion;
+use App\Models\Postgre\Question;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;

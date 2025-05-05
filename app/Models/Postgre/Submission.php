@@ -1,12 +1,13 @@
 <?php
 
-namespace App;
+namespace App\Models\Postgre;
+
 
 use Illuminate\Database\Eloquent\Model;
 
 class Submission extends Model
 {
-    protected $table = 'submissions';
+    protected $table = 'postgre_submissions';
 
     protected $fillable = [
         'student_id',

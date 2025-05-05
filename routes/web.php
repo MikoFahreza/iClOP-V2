@@ -42,20 +42,22 @@ Route::get('/signup', function () {
     return view('signup');
 })->name('signup');
 
-Route::post('/logoutt', [AuthController::class, 'logoutt'])
-    ->name('logoutt');
-Route::get('/logout', [AuthController::class, 'logoutt'])
-    ->name('logout');
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+
 
 // Route::group(["prefix" => 'test', 'middleware' => ['login'],  'as' => 'test.'], function(){
 
+
+Route::get('/dashboard-admin', function () {
+    return view('dashboard_admin');
+})->name('dashboard-admin')->middleware('auth');
 
 Route::get('/dashboard-student', function () {
     return view('dashboard_student');
 })->name('dashboard-student')->middleware('auth');
 
-Route::get('/dashboard_teacher', function () {
-    return view('dashboard_student');
+Route::get('/dashboard-teacher', function () {
+    return view('dashboard_teacher');
 })->name('dashboard-teacher')->middleware('auth');
 
 Route::get('/learning-student', function () {
@@ -67,7 +69,7 @@ Route::get('/material-detail', function () {
 })->name('material_detail');
 
 // Route Node JS
-require __DIR__ . '/nodejs_routes.php';
+// require __DIR__ . '/nodejs_routes.php';
 
 // Route Aplas
 
@@ -75,10 +77,10 @@ require __DIR__ . '/nodejs_routes.php';
 
 // Route
 require __DIR__ . '/android23_routes.php';
-
+require __DIR__ . '/postgre_routes.php';
 require __DIR__ . '/php_routes.php';
 require __DIR__ . '/phpunit_routes.php';
 require __DIR__ . '/react_routes.php';
 require __DIR__ . '/flutter_routes.php';
-require __DIR__ . '/python_routes.php';
+// require __DIR__ . '/python_routes.php';
 // });

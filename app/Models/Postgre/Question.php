@@ -1,12 +1,13 @@
 <?php
 
-namespace App;
+namespace App\Models\Postgre;
+
 
 use Illuminate\Database\Eloquent\Model;
 
 class Question extends Model
 {
-    protected $table = 'question';
+    protected $table = 'postgre_question';
 
     protected $fillable = [
         'title',

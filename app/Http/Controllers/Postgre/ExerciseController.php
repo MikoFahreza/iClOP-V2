@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Postgre;
 
-use App\Exercise;
+use App\Models\Postgre\Exercise;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -69,7 +69,7 @@ class ExerciseController extends Controller
 
     public function getExerciseAsOption(Request $request)
     {
-        $data['exercise'] = Exercise::where('academic_year_id', $request->yid)->get();
+        $data['postgre_exercise'] = Exercise::where('academic_year_id', $request->yid)->get();
         return response()->json($data);
     }
 
