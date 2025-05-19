@@ -56,8 +56,8 @@ class ClassesStudentController extends Controller
 
     public function getClassStudentDataTable(Request $request)
     {
-        $student = DB::table('class_student')
-            ->join('postgre_class', 'postgre_class_student.class_id', 'class.id')
+        $student = DB::table('postgre_class_student')
+            ->join('postgre_class', 'postgre_class_student.class_id', 'postgre_class.id')
             ->join('users', 'postgre_class_student.student_id', 'users.id')
             ->where('postgre_class_student.class_id', $request->class_id)
             ->select('postgre_class_student.id', 'users.id as student_id', 'users.name', 'postgre_class.name as class_name')

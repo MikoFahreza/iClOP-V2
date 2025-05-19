@@ -34,11 +34,11 @@ class ExerciseResultController extends Controller
     {
         $class_id = $request->class_id;
 
-        $student = DB::table('class_student')
-            ->join('class', 'class_student.class_id', 'class.id')
-            ->join('users', 'class_student.student_id', 'users.id')
-            ->where('class_student.class_id', $class_id)
-            ->select('users.id', 'users.name as username', 'class.name as classname')
+        $student = DB::table('postgre_class_student')
+            ->join('postgre_class', 'postgre_class_student.class_id', 'postgre_class.id')
+            ->join('users', 'postgre_class_student.student_id', 'users.id')
+            ->where('postgre_class_student.class_id', $class_id)
+            ->select('users.id', 'users.name as username', 'postgre_class.name as classname')
             ->get();
 
         return DataTables::of($student)

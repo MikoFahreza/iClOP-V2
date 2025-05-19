@@ -45,7 +45,7 @@
             </div>
         </div>
     </div>
-    @include('user.student.result.detail-nilai-latihan-modal')
+    @include('postgre.user.student.result.detail-nilai-latihan-modal')
 @endsection
 
 @section('script')
