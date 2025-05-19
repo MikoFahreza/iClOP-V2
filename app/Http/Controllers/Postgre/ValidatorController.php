@@ -154,7 +154,7 @@ class ValidatorController extends Controller
 
             //Execute Code
             $mycode = "BEGIN;";
-            // $mycode = $test[0]->required_table;
+            $mycode = $test[0]->required_table;
             $mycode .= $request->code;
             try {
                 $this->executeCode($mhs_connection, $mycode, $this->topic);
@@ -331,7 +331,7 @@ class ValidatorController extends Controller
 
             //Execute Code
             $mycode = "BEGIN;";
-            // $mycode = $test[0]->required_table;
+            $mycode = $test[0]->required_table;
             $mycode .= $request->code;
             try {
                 $this->executeCode($mhs_connection, $mycode, $this->topic);

@@ -72,11 +72,8 @@
                                             <div class="input-group">
                                                 <select class="form-control" name="topic">
                                                     <option selected disabled>- Pilih Topik -</option>
-                                                    <option value="CREATE Database">CREATE Database</option>
-                                                    <option value="CREATE Table">CREATE Table</option>
-                                                    <option value="ALTER Table">ALTER Table</option>
-                                                    <option value="DROP Table">DROP Table</option>
-                                                    <option value="DROP Database">DROP Database</option>
+                                                    <option value="FUNCTION">Function</option>
+                                                    <option value="PROCEDURE">Stored Procedure</option>
                                                 </select>
                                                 <div class="input-group-append">
                                                     <div class="input-group-text">
@@ -87,7 +84,7 @@
                                             <span class="text-danger error-text topic_error"></span>
                                         </div>
                                     </div>
-                                    <div class="form-row">
+                                    <!-- <div class="form-row">
                                         <div class="form-group col-sm-12">
                                             <label for="dbname">Nama Database </label>
                                             <span class="fas fa-question" data-toggle="tooltip_dbname"
@@ -104,7 +101,7 @@
                                             </div>
                                             <span class="text-danger error-text dbname_error"></span>
                                         </div>
-                                    </div>
+                                    </div> -->
                                     <div class="form-row">
                                         <div class="form-group col-sm-12">
                                             <label for="description">Deskripsi</label>
@@ -119,7 +116,7 @@
                                             <span class="text-danger error-text description_error"></span>
                                         </div>
                                     </div>
-                                    <div class="form-row">
+                                    <!-- <div class="form-row">
                                         <div class="form-group col-sm-12">
                                             <label for="required_table">Required Table</label>
                                             <span class="fas fa-question" data-toggle="tooltip_requiredTable"
@@ -135,7 +132,7 @@
                                             </div>
                                             <span class="text-danger error-text required_table_error"></span>
                                         </div>
-                                    </div>
+                                    </div> -->
                                     <div class="form-row">
                                         <div class="form-group col">
                                             <label for="test_code">Test Code</label>

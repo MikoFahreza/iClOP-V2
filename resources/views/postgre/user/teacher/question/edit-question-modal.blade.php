@@ -34,11 +34,8 @@
                                     <div class="input-group">
                                         <select class="form-control" name="topic">
                                             <option selected disabled>- Pilih Topik -</option>
-                                            <option value="CREATE Database">CREATE Database</option>
-                                            <option value="CREATE Table">CREATE Table</option>
-                                            <option value="ALTER Table">ALTER Table</option>
-                                            <option value="DROP Database">DROP Database</option>
-                                            <option value="DROP Table">DROP Table</option>
+                                            <option value="FUNCTION">Function</option>
+                                            <option value="PROCEDURE">Stored Procedure</option>
                                         </select>
                                         <div class="input-group-append">
                                             <div class="input-group-text">
@@ -98,7 +95,7 @@
                                     <label for="required_table">Required Table</label>
                                     <span class="fas fa-question" data-toggle="tooltip_requiredTable"
                                         data-placement="right"
-                                        title="TIDAK WAJIB DIISI. Digunakan untuk membuat tabel yang dibutuhkan untuk pemebelajaran."></span>
+                                        title="TIDAK WAJIB DIISI. Digunakan untuk membuat tabel yang dibutuhkan untuk pembelajaran."></span>
                                     <div class="input-group">
                                         <textarea rows="5" type="text" class="form-control" name="required_table"
                                             placeholder="Required table"></textarea>
