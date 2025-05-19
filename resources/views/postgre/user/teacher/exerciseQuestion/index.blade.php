@@ -1,4 +1,4 @@
-@extends('user.teacher.master') @section('title')
+@extends('postgre.user.teacher.master') @section('title')
     iCLOP | Soal Latihan
 @endsection
 @section('content-header')
@@ -83,7 +83,7 @@
                 </div>
             </div>
         </div>
-        @include('user.teacher.exerciseQuestion.modal-edit-exerciseQuestion')
+        @include('postgre.user.teacher.exerciseQuestion.modal-edit-exerciseQuestion')
     </div>
 @endsection
 @section('script')

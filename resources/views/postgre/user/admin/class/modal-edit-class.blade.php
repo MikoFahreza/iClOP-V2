@@ -52,7 +52,7 @@
                             <div class="input-group">
                                 <select name="teacher_id" class="form-control">
                                     @forelse ($teacher as $item)
-                                        <option value="{{ $item->{'id'} }}">{{ $item->user->{'name'} }}</option>
+                                        <option value="{{ $item->{'id'} }}">{{ $item->{'name'} }}</option>
                                     @empty
                                         <option disabled>Not Found</option>
                                     @endforelse

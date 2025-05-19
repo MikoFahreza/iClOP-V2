@@ -48,7 +48,7 @@
                                     <select name="teacher_id" class="form-control">
                                         <option disabled selected>Dosen</option>
                                         @forelse ($teacher as $item)
-                                            <option value="{{ $item->{'id'} }}">{{ $item->user->{'name'} }}</option>
+                                            <option value="{{ $item->{'id'} }}">{{ $item->{'name'} }}</option>
                                         @empty
                                             <option disabled>Not Found</option>
                                         @endforelse
@@ -83,7 +83,7 @@
                                         <hr>
                                         <h3 class="profile-username text-center">{{ $item->{'name'} }}</h3>
                                         <p class="text-center text-muted">
-                                            {{ $item->teacher->user->{'name'} }} <br>
+                                            {{ $item->teacher->{'name'} }} <br>
                                             {{ $item->year->{'name'} }}
                                         </p>
                                         <button class="btn btn-primary btn-block" id="classDetailBtn"
@@ -102,7 +102,7 @@
                     {{ $classes->links() }}
                 </div>
             </div>
-            @include('user.admin.class.modal-edit-class')
+            @include('postgre.user.admin.class.modal-edit-class')
         </div>
     </div>
     @endsection @section('script')

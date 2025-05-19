@@ -14,7 +14,7 @@ class ExerciseResultController extends Controller
     {
         $exercise = Exercise::all();
         $class_id = $request->class_id;
-        return view('user.teacher.exerciseResult.exerciseResultByClass', compact('exercise', 'class_id'));
+        return view('postgre.user.teacher.exerciseResult.exerciseResultByClass', compact('exercise', 'class_id'));
     }
 
     public function getExerciseIDForDataTable(Request $request)
@@ -43,34 +43,34 @@ class ExerciseResultController extends Controller
 
         return DataTables::of($student)
             ->addColumn('passed', function ($row, Request $request) {
-                $passed = DB::table('exercise_question')
-                    ->join('submissions', 'exercise_question.question_id', 'submissions.question_id')
-                    ->where('exercise_question.exercise_id', $request->exercise_id)
-                    ->where('submissions.student_id', $row->id)
-                    ->where('submissions.status', 'Passed')
-                    ->select('submissions.id')
+                $passed = DB::table('postgre_exercise_question')
+                    ->join('postgre_submissions', 'postgre_exercise_question.question_id', 'postgre_submissions.question_id')
+                    ->where('postgre_exercise_question.exercise_id', $request->exercise_id)
+                    ->where('postgre_submissions.student_id', $row->id)
+                    ->where('postgre_submissions.status', 'Passed')
+                    ->select('postgre_submissions.id')
                     ->count();
                 return $passed;
                 //return floor(($passed / $jumlah_soal) * 100);
             })
             ->addColumn('jumlah_soal', function ($row, Request $request) {
-                $jumlah_soal = DB::table('exercise_question')
-                    ->where('exercise_question.exercise_id', $request->exercise_id)
-                    ->select('exercise_question.id')
+                $jumlah_soal = DB::table('postgre_exercise_question')
+                    ->where('postgre_exercise_question.exercise_id', $request->exercise_id)
+                    ->select('postgre_exercise_question.id')
                     ->count();
                 return $jumlah_soal;
             })
             ->addColumn('result', function ($row, Request $request) {
-                $passed = DB::table('exercise_question')
-                    ->join('submissions', 'exercise_question.question_id', 'submissions.question_id')
-                    ->where('exercise_question.exercise_id', $request->exercise_id)
-                    ->where('submissions.student_id', $row->id)
-                    ->where('submissions.status', 'Passed')
-                    ->select('submissions.id')
+                $passed = DB::table('postgre_exercise_question')
+                    ->join('postgre_submissions', 'postgre_exercise_question.question_id', 'postgre_submissions.question_id')
+                    ->where('postgre_exercise_question.exercise_id', $request->exercise_id)
+                    ->where('postgre_submissions.student_id', $row->id)
+                    ->where('postgre_submissions.status', 'Passed')
+                    ->select('postgre_submissions.id')
                     ->count();
-                $jumlah_soal = DB::table('exercise_question')
-                    ->where('exercise_question.exercise_id', $request->exercise_id)
-                    ->select('exercise_question.id')
+                $jumlah_soal = DB::table('postgre_exercise_question')
+                    ->where('postgre_exercise_question.exercise_id', $request->exercise_id)
+                    ->select('postgre_exercise_question.id')
                     ->count();
                 return floor(($passed / $jumlah_soal) * 100);
             })

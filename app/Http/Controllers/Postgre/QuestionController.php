@@ -42,7 +42,7 @@ class QuestionController extends Controller
             return response()->json(['code' => 0, 'error' => $validator->errors()->toArray()]);
         } else {
 
-            $path = 'ddl_guidance/';
+            $path = 'function_guidance/';
             $file = $request->file('guidance');
             $file_name = $file->getClientOriginalName();
 
@@ -76,7 +76,7 @@ class QuestionController extends Controller
     {
         $question_id = $request->qid;
         $task = Question::find($question_id);
-        $path = 'ddl_guidance/';
+        $path = 'function_guidance/';
 
         $validator = Validator::make($request->all(), [
             'title' => 'required|string',
@@ -84,7 +84,7 @@ class QuestionController extends Controller
             'dbname' => 'required|string',
             'description' => 'required|string',
             'test_code' => 'required|string',
-            'guidance_update' => 'mimes:pdf|max:2048|unique:questions,guide',
+            'guidance_update' => 'mimes:pdf|max:2048|unique:postgre_question,guide',
         ]);
 
         if ($validator->fails()) {

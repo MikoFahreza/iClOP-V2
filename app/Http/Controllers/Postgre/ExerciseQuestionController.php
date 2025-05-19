@@ -31,13 +31,13 @@ class ExerciseQuestionController extends Controller
     public function getExerciseQuestionDataTableByExercise(Request $request)
     {
         // $question = Question::all();
-        $question = DB::table('exercise_question')
-            ->join('exercise', 'exercise_question.exercise_id', 'exercise.id')
-            ->join('question', 'exercise_question.question_id', 'question.id')
-            ->where('exercise_question.exercise_id', $request->exercise_id)
-            ->where('exercise_question.isRemoved', '=', 0)
-            ->select('exercise_question.id', 'question.title', 'question.topic', 'exercise_question.no', 'question.id as question_id')
-            ->orderBy('exercise_question.no')
+        $question = DB::table('postgre_exercise_question')
+            ->join('postgre_exercise', 'postgre_exercise_question.exercise_id', 'postgre_exercise.id')
+            ->join('postgre_question', 'postgre_exercise_question.question_id', 'postgre_question.id')
+            ->where('postgre_exercise_question.exercise_id', $request->exercise_id)
+            ->where('postgre_exercise_question.isRemoved', '=', 0)
+            ->select('postgre_exercise_question.id', 'postgre_question.title', 'postgre_question.topic', 'postgre_exercise_question.no', 'postgre_question.id as question_id')
+            ->orderBy('postgre_exercise_question.no')
             ->get();
 
         return DataTables::of($question)
@@ -68,11 +68,11 @@ class ExerciseQuestionController extends Controller
     public function getExerciseQuestionList(Request $request)
     {
         $exercise_id = $request->exercise_id;
-        $exercise = DB::table('exercise_question')
-            ->join('exercise', 'exercise_question.exercise_id', 'exercise.id')
-            ->join('question', 'exercise_question.question_id', 'question.id')
-            ->where('exercise_question.exercise_id', $exercise_id)
-            ->select('question.title', 'question.topic', 'question.title', 'question.description', 'exercise_question.exercise_id', 'exercise_question.no')
+        $exercise = DB::table('postgre_exercise_question')
+            ->join('postgre_exercise', 'postgre_exercise_question.exercise_id', 'postgre_exercise.id')
+            ->join('postgre_question', 'postgre_exercise_question.question_id', 'postgre_question.id')
+            ->where('postgre_exercise_question.exercise_id', $exercise_id)
+            ->select('postgre_question.title', 'postgre_question.topic', 'postgre_question.title', 'postgre_question.description', 'postgre_exercise_question.exercise_id', 'postgre_exercise_question.no')
             ->get();
 
         return DataTables::of($exercise)
@@ -88,14 +88,14 @@ class ExerciseQuestionController extends Controller
 
     public function getExerciseQuestionItem(Request $request)
     {
-        $soal = DB::table('exercise_question')
-            ->join('question', 'exercise_question.question_id', 'question.id')
-            ->where('exercise_question.exercise_id', '=', $request->exercise_id)
-            ->where('exercise_question.no', '=', $request->question_no)
-            ->select('exercise_question.no', 'question.id', 'question.title', 'question.topic', 'question.dbname', 'question.description', 'question.required_table', 'question.test_code', 'question.guide', 'exercise_question.exercise_id')
+        $soal = DB::table('postgre_exercise_question')
+            ->join('postgre_question', 'postgre_exercise_question.question_id', 'postgre_question.id')
+            ->where('postgre_exercise_question.exercise_id', '=', $request->exercise_id)
+            ->where('postgre_exercise_question.no', '=', $request->question_no)
+            ->select('postgre_exercise_question.no', 'postgre_question.id', 'postgre_question.title', 'postgre_question.topic', 'postgre_question.dbname', 'postgre_question.description', 'postgre_question.required_table', 'postgre_question.test_code', 'postgre_question.guide', 'postgre_exercise_question.exercise_id')
             ->get();
         $jumlah_soal = ExerciseQuestion::where('exercise_id', '=', $request->exercise_id)->get()->count();
-        return view('user.student.question.index', compact('soal', 'jumlah_soal'));
+        return view('postgre.user.student.question.index', compact('soal', 'jumlah_soal'));
     }
 
     public function getExerciseQuestion(Request $request)

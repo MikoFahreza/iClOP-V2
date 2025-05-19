@@ -1,4 +1,4 @@
-@extends('user.teacher.master')
+@extends('postgre.user.teacher.master')
 
 @section('title', 'iCLOP | Bank Soal')
 
@@ -205,7 +205,7 @@
             </div>
         </div>
     </div>
-    @include('user.teacher.question.edit-question-modal')
+    @include('postgre.user.teacher.question.edit-question-modal')
 @endsection
 
 @section('script')
@@ -272,7 +272,7 @@
 
         $(document).on('click', '#detailBtn', function() {
             const question_id = $(this).data('id');
-            const url = '{{ route('teacher.question.detail') }}'
+            const url = "{{ route('teacher.question.detail') }}"
             $('.editQuestionModal').find('form')[0].reset();
             $.get(url, {
                 question_id: question_id

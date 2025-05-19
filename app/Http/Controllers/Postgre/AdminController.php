@@ -28,15 +28,17 @@ class AdminController extends Controller
     public function class()
     {
         $classes = Classes::with('teacher', 'year')->paginate(3);
-        $teacher = Teacher::all();
+        $teacher = User::where('role', 'teacher')->get();
         $year = AcademicYear::where('status', 'Aktif')->get();
         return view('postgre.user.admin.class.index', compact('classes', 'teacher', 'year'));
     }
 
     public function teacher()
     {
-        $teacher = Teacher::with('user')->paginate(3);
-        return view('postgre.user.admin.teacher.index', compact('teacher'));
+        $teacherPaged = User::where('role', 'teacher')->paginate(3);
+        $teachers = User::where('role', 'teacher')->get();
+        $years = AcademicYear::where('status', 'Aktif')->get();
+        return view('postgre.user.admin.teacher.index', compact('teacherPaged','teachers', 'years'));
     }
 
     

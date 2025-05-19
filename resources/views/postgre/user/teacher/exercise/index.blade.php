@@ -94,7 +94,7 @@
                     {{ $exercise->links() }}
                 </div>
             </div>
-            @include('user.teacher.exercise.modal-edit-exercise')
+            @include('postgre.user.teacher.exercise.modal-edit-exercise')
         </div>
     </div>
     @endsection @section('script')

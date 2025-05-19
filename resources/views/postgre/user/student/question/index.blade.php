@@ -17,26 +17,27 @@
 @section('content')
     <div class="content">
         <div class="container">
+
             <div class="row">
                 @forelse ($soal as $item)
                     <div class="col-md-6">
-                        <embed src="{{ Storage::disk('local')->url('/ddl_guidance/' . $item->guide) }}" type="application/pdf"
+                        <embed src="{{ Storage::disk('public')->url('function_guidance/' . $item->guide) }}" type="application/pdf"
                             style="width: 100%; height: 500px;">
                     </div>
 
                     <div class="col-md-6">
                         <div class="editor" id="editor" style="height: 200px;"></div>
                         <div class="row mt-3">
-                            @if ($item->{'no'} <= 1)
+                            @if ($item->no <= 1)
                                 <div class="col-3">
                                     <button class="btn btn-primary w-100" data-toggle="tooltip" data-placement="bottom"
                                         title="Sebelumnya" disabled><i class="fa fa-angle-left"></i></button>
                                 </div>
                             @else
                                 <div class="col-3">
-                                    <button id="prevBtn" class="btn btn-primary w-100 data-toggle=" tooltip
+                                    <button id="prevBtn" class="btn btn-primary w-100" data-toggle="tooltip"
                                         data-placement="bottom" title="Sebelumnya"
-                                        onclick="window.location.href='/s/exercise-question/question/{{ $item->{'exercise_id'} }}/{{ $item->{'no'} - 1 }}'"><i
+                                        onclick="window.location.href='/s/exercise-question/question/{{ $item->exercise_id }}/{{ $item->no - 1 }}'"><i
                                             class="fa fa-angle-left"></i></button>
                                 </div>
                             @endif
@@ -50,7 +51,7 @@
                                 <div class="col-3">
                                     <button class="btn btn-primary w-100" data-toggle="tooltip" data-placement="bottom"
                                         title="Selanjutnya"
-                                        onclick="window.location.href='/s/exercise-question/question/{{ $item->{'exercise_id'} }}/{{ $item->{'no'} + 1 }}'">
+                                        onclick="window.location.href='/s/exercise-question/question/{{ $item->exercise_id }}/{{ $item->no + 1 }}'">
                                         <i class="fa fa-angle-right"></i></button>
                                 </div>
                             @endif
@@ -74,11 +75,11 @@
             </div>
         </div>
 
-        <script src="{{ asset('editor/ide.js') }} "></script>
-        <script src="{{ asset('editor/ace-editor/ace.js') }} "></script>
-        <script src="{{ asset('editor/ace-editor/mode-pgsql.js') }} "></script>
-        <script src="{{ asset('editor/ace-editor/theme-monokai.js') }} "></script>
-        <script src="{{ asset('editor/ace-editor/ext-language_tools.js') }}"></script>
+        <script src="{{ asset('postgre/editor/ide.js') }} "></script>
+        <script src="{{ asset('postgre/editor/ace-editor/ace.js') }} "></script>
+        <script src="{{ asset('postgre/editor/ace-editor/mode-pgsql.js') }} "></script>
+        <script src="{{ asset('postgre/editor/ace-editor/theme-monokai.js') }} "></script>
+        <script src="{{ asset('postgre/editor/ace-editor/ext-language_tools.js') }}"></script>
         <script>
             var langTools = ace.require("ace/ext/language_tools");
         </script>

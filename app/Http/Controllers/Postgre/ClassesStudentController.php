@@ -57,11 +57,10 @@ class ClassesStudentController extends Controller
     public function getClassStudentDataTable(Request $request)
     {
         $student = DB::table('class_student')
-            ->join('class', 'class_student.class_id', 'class.id')
-            // ->join('student', 'class_student.student_id', 'student.id')
-            ->join('users', 'class_student.student_id', 'users.id')
-            ->where('class_student.class_id', $request->class_id)
-            ->select('class_student.id', 'users.id as student_id', 'users.name', 'class.name as class_name')
+            ->join('postgre_class', 'postgre_class_student.class_id', 'class.id')
+            ->join('users', 'postgre_class_student.student_id', 'users.id')
+            ->where('postgre_class_student.class_id', $request->class_id)
+            ->select('postgre_class_student.id', 'users.id as student_id', 'users.name', 'postgre_class.name as class_name')
             ->get();
 
         return DataTables::of($student)

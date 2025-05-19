@@ -30,17 +30,21 @@
                         <div class="row">
                             <div class="col-sm-6">
                                 <div class="form-group">
-                                    <select class="form-control">
+                                    <select class="form-control" name="academic_year">
                                         <option value="" disabled selected>Tahun Ajaran</option>
-                                        <option value="">2021/2022</option>
+                                        @foreach ($years as $year)
+                                            <option value="{{ $year->id }}">{{ $year->name }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>
                             <div class="col-sm-6">
                                 <div class="form-group">
-                                    <select class="form-control">
-                                        <option disabled selected>Dosen</option>
-                                        <option>option 1</option>
+                                    <select class="form-control" name="teacher">
+                                        <option value="" disabled selected>Dosen</option>
+                                        @foreach ($teachers as $teacher)
+                                            <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>
@@ -61,14 +65,14 @@
                         </div>
                     </form>
                     <div class="row mt-3">
-                        @forelse ($teacher as $item)
+                        @forelse ($teacherPaged as $item)
                             <div class="col-lg-4">
                                 <div class="card card-primary card-outline">
                                     <div class="card-body box-profile">
                                         <div class="text-center">
                                             <i class="fa-solid fa-user-circle"></i>
                                         </div>
-                                        <h3 class="profile-username text-center">{{ $item->user->name }}</h3>
+                                        <h3 class="profile-username text-center">{{ $item->name }}</h3>
                                         <hr>
                                         <p class="text-center text-muted"></p>
                                         <a href="#" class="btn btn-primary btn-block"><b>Detail</b></a>

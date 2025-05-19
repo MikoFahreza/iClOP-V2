@@ -58,7 +58,7 @@
                             <h3>Mahasiswa</h3>
                             <p>Daftar Mahasiswa</p>
                         </div>
-                        <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                        <a href="{{ route('admin.student') }}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                     </div>
                 </div>
             </div>

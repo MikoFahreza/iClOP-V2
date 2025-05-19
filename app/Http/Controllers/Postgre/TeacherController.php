@@ -58,11 +58,10 @@ class TeacherController extends Controller
     public function exerciseResult(Request $request)
     {
         // $class = Classes::where('teacher_id', Auth::user()->id)->get();
-        $class = DB::table('teacher')
-            ->join('users', 'teacher.user_id', 'users.id')
-            ->join('class', 'teacher.id', 'class.teacher_id')
+        $class = DB::table('users')
+            ->join('postgre_class', 'users.id', 'postgre_class.teacher_id')
             ->where('users.id', Auth::user()->id)
-            ->select('class.id', 'class.name')
+            ->select('postgre_class.id', 'postgre_class.name')
             ->get();
         return view('postgre.user.teacher.exerciseResult.index', compact('class'));
     }

@@ -1,6 +1,7 @@
 <?php
 
 use App\ExerciseQuestion;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Postgre\ClassesController;
 use App\Http\Controllers\Postgre\ClassesStudentController;
 use App\Http\Controllers\Postgre\ExerciseController;
@@ -110,4 +111,5 @@ Route::group(['prefix' => 's', 'midddleware' => ['auth', 'isStudent']], function
     Route::get('result/exercise/detail/solution', [StudentController::class, 'getSubmissionResultDetail'])->name('student.result.getSubmissionDetail');
 });
 
-Route::get("p", function() {})->name('logout');
+
+Route::get('/p', [AuthController::class, 'logout'])->name('logout');

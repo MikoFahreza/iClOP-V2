@@ -30,7 +30,7 @@
         <nav class="main-header navbar navbar-expand-md navbar-dark">
             <div class="container">
                 <a href="{{ route('student.dashboard') }}" class="navbar-brand">
-                    <img src="{{ asset('dist/img/AdminLTELogo.png') }}" alt="AdminLTE Logo"
+                    <img src="{{ asset('postgre/dist/img/AdminLTELogo.png') }}" alt="AdminLTE Logo"
                         class="brand-image img-circle elevation-3" style="opacity: .8">
                     <span class="brand-text font-weight-light">iCLOP</span>
                 </a>
@@ -88,7 +88,7 @@
                                 <i class="fas fa-sign-out mr-2"></i> Sign Out
                             </a>
 
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                            <form id="logout-form" action="{{ route('logout') }}" method="GET"
                                 style="display: none;">
                                 @csrf
                             </form>

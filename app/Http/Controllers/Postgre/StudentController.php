@@ -39,25 +39,25 @@ class StudentController extends Controller
     public function resultByExercise(Request $request)
     {
         $exercise_id = $request->exercise_id;
-        $passed = DB::table('exercise_question')
-            ->join('submissions', 'exercise_question.question_id', 'submissions.question_id')
-            ->join('question', 'exercise_question.question_id', 'question.id')
-            ->where('exercise_question.exercise_id', $request->exercise_id)
-            ->where('submissions.student_id', Auth::user()->id)->get()->count();
+        $passed = DB::table('postgre_exercise_question')
+            ->join('postgre_submissions', 'postgre_exercise_question.question_id', 'postgre_submissions.question_id')
+            ->join('postgre_question', 'postgre_exercise_question.question_id', 'postgre_question.id')
+            ->where('postgre_exercise_question.exercise_id', $request->exercise_id)
+            ->where('postgre_submissions.student_id', Auth::user()->id)->get()->count();
             
-        $question = DB::table('exercise_question')->where('exercise_id', 1)->get()->count();
+        $question = DB::table('postgre_exercise_question')->where('exercise_id', 1)->get()->count();
         $result = floor(($passed / $question) * 100);
         return view('postgre.user.student.result.resultByExercise', compact('exercise_id', 'passed', 'question', 'result'));
     }
 
     public function getResultByExerciseDataTable(Request $request)
     {
-        $nilai = DB::table('exercise_question')
-            ->join('submissions', 'exercise_question.question_id', 'submissions.question_id')
-            ->join('question', 'exercise_question.question_id', 'question.id')
-            ->where('exercise_question.exercise_id', $request->exercise_id)
-            ->where('submissions.student_id', Auth::user()->id)
-            ->select('submissions.id', 'exercise_question.no', 'question.title', 'submissions.status', 'submissions.created_at', 'submissions.updated_at');
+        $nilai = DB::table('postgre_exercise_question')
+            ->join('postgre_submissions', 'postgre_exercise_question.question_id', 'postgre_submissions.question_id')
+            ->join('postgre_question', 'postgre_exercise_question.question_id', 'postgre_question.id')
+            ->where('postgre_exercise_question.exercise_id', $request->exercise_id)
+            ->where('postgre_submissions.student_id', Auth::user()->id)
+            ->select('postgre_submissions.id', 'postgre_exercise_question.no', 'postgre_question.title', 'postgre_submissions.status', 'postgre_submissions.created_at', 'postgre_submissions.updated_at');
 
         return DataTables::of($nilai)
             ->addColumn('actions', function ($row) {

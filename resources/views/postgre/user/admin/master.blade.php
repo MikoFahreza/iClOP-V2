@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="{{ asset('postgre/plugins/overlayScrollbars/css/OverlayScrollbars.min.css') }}">
     <link rel="stylesheet" href="{{ asset('postgre/plugins/fontawesome-free/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('postgre/dist/css/adminlte.min.css?v=3.2.0') }}">
-    <link rel="stylesheet" href="{{ asset('postgre/https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css') }}">
 
     <!-- Datatable -->
     <link rel="stylesheet" href="{{ asset('postgre/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
@@ -49,7 +49,7 @@
                             <i class="fas fa-sign-out mr-2"></i> Sign Out
                         </a>
 
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                        <form id="logout-form" action="{{ route('logout') }}" method="GET" style="display: none;">
                             @csrf
                         </form>
                     </div>
@@ -59,7 +59,7 @@
 
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <a href="index3.html" class="brand-link">
-                <img src="{{ asset('dist/img/AdminLTELogo.png') }}" alt="AdminLTE Logo"
+                <img src="{{ asset('postgre/dist/img/AdminLTELogo.png') }}" alt="AdminLTE Logo"
                     class="brand-image img-circle elevation-3" style="opacity: .8">
                 <span class="brand-text font-weight-light">iCLOP</span>
             </a>

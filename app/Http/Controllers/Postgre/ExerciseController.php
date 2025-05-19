@@ -69,7 +69,7 @@ class ExerciseController extends Controller
 
     public function getExerciseAsOption(Request $request)
     {
-        $data['postgre_exercise'] = Exercise::where('academic_year_id', $request->yid)->get();
+        $data['exercise'] = Exercise::where('academic_year_id', $request->yid)->get();
         return response()->json($data);
     }
 
