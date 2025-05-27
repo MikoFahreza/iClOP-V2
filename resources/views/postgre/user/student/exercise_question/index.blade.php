@@ -24,6 +24,7 @@
                                 <th>No</th>
                                 <th>Soal</th>
                                 <th>Topik</th>
+                                <th>Sub Topik</th>
                                 <th>Deskrpsi</th>
                                 <th>Aksi</th>
                             </thead>
@@ -54,8 +55,12 @@
                     name: "title"
                 },
                 {
-                    data: "topic",
-                    name: "topic"
+                    data: "topic_name",
+                    name: "topic_id"
+                },
+                {
+                    data: "sub_topic_name",
+                    name: "sub_topic_id"
                 },
                 {
                     data: "description",

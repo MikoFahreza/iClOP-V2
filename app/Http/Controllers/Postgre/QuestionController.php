@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Postgre;
 
 use App\Models\Postgre\Question;
+use App\Models\Postgre\Topic;
+use App\Models\Postgre\SubTopic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -12,25 +14,33 @@ class QuestionController extends Controller
 {
     public function getQuestionDataTable()
     {
-        $soal = Question::all();
+        $soal = Question::with('subTopic.topic')->get();
+
         return DataTables::of($soal)
+            ->addColumn('sub_topic_name', function ($row) {
+                return $row->subTopic->name ?? '-';
+            })
+            ->addColumn('topic_name', function ($row) {
+                return $row->subTopic->topic->name ?? '-';
+            })
             ->addColumn('actions', function ($row) {
                 return '<div class="btn-group" role="group">
-            <button id="detailBtn" type="button" class="btn btn-primary btn-block" data-id="' . $row->id . '">
-            <i class="fa fa-eye"></i>
-            </button> 
-            </div>';
+                    <button id="detailBtn" type="button" class="btn btn-primary btn-block" data-id="' . $row->id . '">
+                        <i class="fa fa-eye"></i>
+                    </button>
+                </div>';
             })
             ->rawColumns(['actions'])
             ->make(true);
     }
 
 
+
     public function addQuestion(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'title' => 'required|string',
-            'topic' => 'required|string',
+            'sub_topic_id' => 'required|string',
             'description' => 'required|string',
             'test_code' => 'required|string',
             'guidance' => 'required|mimes:pdf|max:2048',
@@ -49,7 +59,7 @@ class QuestionController extends Controller
             if ($upload) {
                 Question::insert([
                     'title' => $request->title,
-                    'topic' => $request->topic,
+                    'sub_topic_id' => $request->sub_topic_id,
                     'description' => $request->description,
                     'test_code' => $request->test_code,
                     'guide' => $file_name,
@@ -76,7 +86,7 @@ class QuestionController extends Controller
 
         $validator = Validator::make($request->all(), [
             'title' => 'required|string',
-            'topic' => 'required|string',
+            'sub_topic_id' => 'required|string',
             'description' => 'required|string',
             'test_code' => 'required|string',
             'guidance_update' => 'mimes:pdf|max:2048|unique:postgre_question,guide',
@@ -97,7 +107,7 @@ class QuestionController extends Controller
                 if ($upload) {
                     $task->update([
                         'title' => $request->title,
-                        'topic' => $request->topic,
+                        'sub_topic_id' => $request->sub_topic_id,
                         'description' => $request->description,
                         'test_code' => $request->test_code,
                         'guide' => $file_name,
@@ -107,7 +117,7 @@ class QuestionController extends Controller
             } else {
                 $task->update([
                     'title' => $request->title,
-                    'topic' => $request->topic,
+                    'sub_topic_id' => $request->sub_topic_id,
                     'description' => $request->description,
                     'test_code' => $request->test_code,
                 ]);
@@ -115,4 +125,17 @@ class QuestionController extends Controller
             }
         }
     }
+
+    public function getTopics()
+    {
+        $topics = Topic::all(['id', 'name']);
+        return response()->json($topics);
+    }
+
+    public function getSubTopicsByTopic($topic)
+    {
+        $list = SubTopic::where('topic_id', $topic)->get(['id','name']);
+        return response()->json($list);
+    }
+
 }

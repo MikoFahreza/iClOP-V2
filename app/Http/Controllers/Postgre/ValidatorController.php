@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 class ValidatorController extends Controller
 {
-    private $topic, $dbname;
+    private $sub_topic_id, $dbname;
     private $test_code, $isAllowSubmit;
 
     protected function displayHint($myhint)
@@ -43,9 +43,9 @@ class ValidatorController extends Controller
         }
     }
 
-    public function executeCode($connection, $code, $topic)
+    public function executeCode($connection, $code, $sub_topic_id)
     {
-        if (str_contains(strtolower($code), strtolower($topic))) {
+        if (str_contains(strtolower($code), strtolower($sub_topic_id))) {
             $result = pg_query($connection, $code);
             if (!$result) {
                 throw new \Exception($this->displayError(pg_last_error($connection)));
@@ -53,7 +53,7 @@ class ValidatorController extends Controller
                 return $result;
             }
         } else {
-            throw new \Exception($this->displayHint("Anda bisa menggunakan <strong>$topic</strong> pada pembelajaran kali ini"));
+            throw new \Exception($this->displayHint("Anda bisa menggunakan <strong>$sub_topic_id</strong> pada pembelajaran kali ini"));
         }
     }
 
@@ -98,10 +98,10 @@ class ValidatorController extends Controller
         //Get task data
         $test = Question::where('id', '=', $request->question_id)->get();
         $this->test_code = $test[0]->test_code;
-        $this->topic = $test[0]->topic;
+        $this->sub_topic_id = $test[0]->sub_topic_id;
         $this->dbname = $test[0]->dbname . Auth::user()->id;
 
-        if (strcmp($test[0]->topic, "CREATE Database") == 0) {
+        if (strcmp($test[0]->sub_topic_id, "CREATE Database") == 0) {
             if (strcasecmp($request->code, "create database my_playlist;") == 0) {
                 $finalResult = "<div id='output-text' class='w-100'>";
                 $finalResult .= "<div class='alert alert-success'>";
@@ -118,7 +118,7 @@ class ValidatorController extends Controller
 
             //Display test result
             return response()->json(['result' => $finalResult]);
-        } else if (strcmp($test[0]->topic, "DROP Database") == 0) {
+        } else if (strcmp($test[0]->sub_topic_id, "DROP Database") == 0) {
             if (strcasecmp($request->code, "DROP DATABASE my_playlists;") == 0) {
                 $finalResult = "<div id='output-text' class='w-100'>";
                 $finalResult .= "<div class='alert alert-success'>";
@@ -157,7 +157,7 @@ class ValidatorController extends Controller
             $mycode = $test[0]->required_table;
             $mycode .= $request->code;
             try {
-                $this->executeCode($mhs_connection, $mycode, $this->topic);
+                $this->executeCode($mhs_connection, $mycode, $this->sub_topic_id);
             } catch (\Exception $e) {
                 return response()->json(['result' => $this->displayError($e->getMessage())]);
             }
@@ -188,11 +188,11 @@ class ValidatorController extends Controller
         //Get task data
         $test = Question::where('id', '=', $request->task_id)->get();
         $this->test_code = $test[0]->test_code;
-        $this->topic = $test[0]->topic;
+        $this->sub_topic_id = $test[0]->sub_topic_id;
         $this->dbname = $test[0]->dbname . Auth::user()->id;
 
         //Get Connection 1
-        if (strcmp($test[0]->topic, "CREATE Database") == 0) {
+        if (strcmp($test[0]->sub_topic_id, "CREATE Database") == 0) {
 
             if (strcasecmp($request->code, "create database my_playlist;") == 0) {
                 $this->isAllowSubmit = true;
@@ -251,7 +251,7 @@ class ValidatorController extends Controller
                     ]);
                 }
             }
-        } else if (strcmp($test[0]->topic, "DROP Database") == 0) {
+        } else if (strcmp($test[0]->sub_topic_id, "DROP Database") == 0) {
             if (strcasecmp($request->code, "DROP DATABASE my_playlists;") == 0) {
                 $this->isAllowSubmit = true;
                 $finalResult = "<div id='output-text' class='w-100'>";
@@ -334,7 +334,7 @@ class ValidatorController extends Controller
             $mycode = $test[0]->required_table;
             $mycode .= $request->code;
             try {
-                $this->executeCode($mhs_connection, $mycode, $this->topic);
+                $this->executeCode($mhs_connection, $mycode, $this->sub_topic_id);
             } catch (\Exception $e) {
                 return response()->json(['result' => $this->displayError($e->getMessage())]);
             }

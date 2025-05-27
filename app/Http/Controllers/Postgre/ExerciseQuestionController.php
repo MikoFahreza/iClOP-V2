@@ -36,7 +36,7 @@ class ExerciseQuestionController extends Controller
             ->join('postgre_question', 'postgre_exercise_question.question_id', 'postgre_question.id')
             ->where('postgre_exercise_question.exercise_id', $request->exercise_id)
             ->where('postgre_exercise_question.isRemoved', '=', 0)
-            ->select('postgre_exercise_question.id', 'postgre_question.title', 'postgre_question.topic', 'postgre_exercise_question.no', 'postgre_question.id as question_id')
+            ->select('postgre_exercise_question.id', 'postgre_question.title', 'postgre_question.sub_topic_id', 'postgre_exercise_question.no', 'postgre_question.id as question_id')
             ->orderBy('postgre_exercise_question.no')
             ->get();
 
@@ -71,8 +71,10 @@ class ExerciseQuestionController extends Controller
         $exercise = DB::table('postgre_exercise_question')
             ->join('postgre_exercise', 'postgre_exercise_question.exercise_id', 'postgre_exercise.id')
             ->join('postgre_question', 'postgre_exercise_question.question_id', 'postgre_question.id')
+            ->join('postgre_sub_topic', 'postgre_question.sub_topic_id', 'postgre_sub_topic.id')
+            ->join('postgre_topic', 'postgre_sub_topic.topic_id', 'postgre_topic.id')
             ->where('postgre_exercise_question.exercise_id', $exercise_id)
-            ->select('postgre_question.title', 'postgre_question.topic', 'postgre_question.title', 'postgre_question.description', 'postgre_exercise_question.exercise_id', 'postgre_exercise_question.no')
+            ->select('postgre_question.title', 'postgre_question.sub_topic_id', 'postgre_sub_topic.name AS sub_topic_name', 'postgre_topic.name AS topic_name', 'postgre_question.title', 'postgre_question.description', 'postgre_exercise_question.exercise_id', 'postgre_exercise_question.no')
             ->get();
 
         return DataTables::of($exercise)
@@ -90,9 +92,11 @@ class ExerciseQuestionController extends Controller
     {
         $soal = DB::table('postgre_exercise_question')
             ->join('postgre_question', 'postgre_exercise_question.question_id', 'postgre_question.id')
+            ->join('postgre_sub_topic', 'postgre_question.sub_topic_id', 'postgre_sub_topic.id')
+            ->join('postgre_topic', 'postgre_sub_topic.topic_id', 'postgre_topic.id')
             ->where('postgre_exercise_question.exercise_id', '=', $request->exercise_id)
             ->where('postgre_exercise_question.no', '=', $request->question_no)
-            ->select('postgre_exercise_question.no', 'postgre_question.id', 'postgre_question.title', 'postgre_question.topic', 'postgre_question.dbname', 'postgre_question.description', 'postgre_question.required_table', 'postgre_question.test_code', 'postgre_question.guide', 'postgre_exercise_question.exercise_id')
+            ->select('postgre_exercise_question.no', 'postgre_question.id', 'postgre_question.title', 'postgre_question.sub_topic_id', 'postgre_question.dbname', 'postgre_question.description', 'postgre_question.required_table', 'postgre_question.test_code', 'postgre_question.guide', 'postgre_exercise_question.exercise_id')
             ->get();
         $jumlah_soal = ExerciseQuestion::where('exercise_id', '=', $request->exercise_id)->get()->count();
         return view('postgre.user.student.question.index', compact('soal', 'jumlah_soal'));

@@ -79,6 +79,9 @@ Route::group(['prefix' => 't', 'midddleware' => ['auth', 'isTeacher']], function
     Route::post('exercise/exercise-option', [ExerciseController::class, 'getExerciseAsOption'])->name('teacher.exercise.getExerciseAsOption');
     Route::post('student/class-id', [ExerciseController::class, 'getExerciseIDForDataTable'])->name('teacher.exercise.getExerciseIDForDataTable');
 
+    Route::get('/topics', [QuestionController::class, 'getTopics'])->name('teacher.topics.list');
+    Route::get('subtopics/{topic}', [QuestionController::class,'getSubTopicsByTopic'])->name('teacher.subtopics.byTopic');
+
     Route::get('exercise/exercise-question/detail', [ExerciseQuestionController::class, 'getExerciseQuestion'])->name('teacher.exerciseQuestion.getExerciseQuestion');
     Route::post('exercise/exercise-question/add', [ExerciseQuestionController::class, 'addExerciseQuestion'])->name('teacher.exerciseQuestion.addExerciseQuestion');
     Route::post('exercise/exercise-question/remove', [ExerciseQuestionController::class, 'removeExerciseQuestion'])->name('teacher.exerciseQuestion.removeExerciseQuestion');
