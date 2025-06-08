@@ -114,5 +114,13 @@ Route::group(['prefix' => 's', 'midddleware' => ['auth', 'isStudent']], function
     Route::get('result/exercise/detail/solution', [StudentController::class, 'getSubmissionResultDetail'])->name('student.result.getSubmissionDetail');
 });
 
+Route::get('/preview-guidance/{filename}', function ($filename) {
+    $path = storage_path('app/public/function_guidance/' . $filename);
+    if (!file_exists($path)) abort(404);
+    return response()->file($path, [
+        'Content-Type' => 'application/pdf',
+        'Content-Disposition' => 'inline; filename="'.$filename.'"'
+    ]);
+});
 
 Route::get('/p', [AuthController::class, 'logout'])->name('logout');

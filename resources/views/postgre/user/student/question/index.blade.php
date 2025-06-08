@@ -21,8 +21,7 @@
             <div class="row">
                 @forelse ($soal as $item)
                     <div class="col-md-6">
-                        <embed src="{{ Storage::disk('public')->url('function_guidance/' . $item->guide) }}" type="application/pdf"
-                            style="width: 100%; height: 500px;">
+                        <embed src="{{ url('/preview-guidance/' . $item->guide) }}" type="application/pdf" style="width: 100%; height: 500px;">
                     </div>
 
                     <div class="col-md-6">
