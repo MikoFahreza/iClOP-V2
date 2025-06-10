@@ -2,22 +2,22 @@
 
 namespace App\Http\Controllers\Postgre;
 
-use App\Models\Postgre\Exercise;
+use App\Models\Postgre\Topic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
-class ExerciseResultController extends Controller
+class TopicResultController extends Controller
 {
     public function exerciseResultByClass(Request $request)
     {
-        $exercise = Exercise::all();
+        $exercise = Topic::all();
         $class_id = $request->class_id;
         return view('postgre.user.teacher.exerciseResult.exerciseResultByClass', compact('exercise', 'class_id'));
     }
 
-    public function getExerciseIDForDataTable(Request $request)
+    public function getTopicIDForDataTable(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'exercise_id' => 'required|string',
@@ -30,7 +30,7 @@ class ExerciseResultController extends Controller
         }
     }
 
-    public function exerciseResultByExerciseDataTable(Request $request)
+    public function exerciseResultByTopicDataTable(Request $request)
     {
         $class_id = $request->class_id;
 

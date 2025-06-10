@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Postgre;
 
 use App\Models\Postgre\AcademicYear;
 use App\Models\Postgre\Classes;
-use App\Models\Postgre\Exercise;
+use App\Models\Postgre\Topic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -42,14 +42,14 @@ class TeacherController extends Controller
 
     public function exercise()
     {
-        $exercise = Exercise::with('year')->paginate(3);
+        $exercise = Topic::with('year')->paginate(3);
         $year = AcademicYear::where('status', 'Aktif')->get();
         return view('postgre.user.teacher.exercise.index', compact('exercise', 'year'));
     }
 
     public function exerciseQuestion(Request $request)
     {
-        $exercise = Exercise::with('year')->paginate(3);
+        $exercise = Topic::with('year')->paginate(3);
         $year = AcademicYear::where('status', 'Aktif')->get();
         $exercise_id = $request->exercise_id;
         return view('postgre.user.teacher.exerciseQuestion.index',compact('exercise', 'year','exercise_id'));

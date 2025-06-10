@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Postgre;
 
-use App\Models\Postgre\Exercise;
+use App\Models\Postgre\Topic;
 use App\Models\Postgre\ExerciseQuestion;
 use App\Models\Postgre\Submission;
 use Illuminate\Http\Request;
@@ -20,7 +20,7 @@ class StudentController extends Controller
 
     public function exercise()
     {
-        $exercise = Exercise::with('year')->get();
+        $exercise = Topic::with('year')->get();
         return view('postgre.user.student.exercise.index', compact('exercise'));
     }
 
@@ -32,11 +32,11 @@ class StudentController extends Controller
 
     public function result()
     {
-        $exercise = Exercise::with('year')->get();
+        $exercise = Topic::with('year')->get();
         return view('postgre.user.student.result.index', compact('exercise'));
     }
 
-    public function resultByExercise(Request $request)
+    public function resultByTopic(Request $request)
     {
         $exercise_id = $request->exercise_id;
         $passed = DB::table('postgre_exercise_question')
@@ -47,10 +47,10 @@ class StudentController extends Controller
             
         $question = DB::table('postgre_exercise_question')->where('exercise_id', 1)->get()->count();
         $result = floor(($passed / $question) * 100);
-        return view('postgre.user.student.result.resultByExercise', compact('exercise_id', 'passed', 'question', 'result'));
+        return view('postgre.user.student.result.resultByTopic', compact('exercise_id', 'passed', 'question', 'result'));
     }
 
-    public function getResultByExerciseDataTable(Request $request)
+    public function getResultByTopicDataTable(Request $request)
     {
         $nilai = DB::table('postgre_exercise_question')
             ->join('postgre_submissions', 'postgre_exercise_question.question_id', 'postgre_submissions.question_id')

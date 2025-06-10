@@ -11,6 +11,7 @@ class Question extends Model
 
     protected $fillable = [
         'title',
+        'no',
         'sub_topic_id',
         'dbname',
         'description',

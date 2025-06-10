@@ -8,6 +8,7 @@ use App\Models\Postgre\SubTopic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 
 class QuestionController extends Controller
@@ -34,7 +35,7 @@ class QuestionController extends Controller
             ->make(true);
     }
 
-
+    
 
     public function addQuestion(Request $request)
     {
