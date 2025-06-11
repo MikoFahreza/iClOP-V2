@@ -33,8 +33,13 @@ class StudentController extends Controller
             ->where('postgre_exercise_question.no', '=', $request->question_no)
             ->select('postgre_exercise_question.no', 'postgre_question.id', 'postgre_question.title', 'postgre_question.topic', 'postgre_question.dbname', 'postgre_question.description', 'postgre_question.required_table', 'postgre_question.test_code', 'postgre_question.guide', 'postgre_exercise_question.exercise_id')
             ->get();
+        $daftar_soal = DB::table('postgre_exercise_question')
+            ->join('postgre_question', 'postgre_exercise_question.question_id', 'postgre_question.id')
+            ->where('postgre_exercise_question.exercise_id', '=', $exercise_id)
+            ->select('postgre_exercise_question.no', 'postgre_question.id', 'postgre_question.title', 'postgre_question.topic', 'postgre_question.dbname', 'postgre_question.description', 'postgre_question.required_table', 'postgre_question.test_code', 'postgre_question.guide', 'postgre_exercise_question.exercise_id')
+            ->get();
         $jumlah_soal = ExerciseQuestion::where('exercise_id', '=', $exercise_id)->get()->count();
-        return view('postgre.user.student.exercise_question.index', compact('exercise_id', 'soal', 'jumlah_soal'));
+        return view('postgre.user.student.exercise_question.index', compact('exercise_id', 'soal', 'jumlah_soal', 'daftar_soal'));
     }
 
     public function result()

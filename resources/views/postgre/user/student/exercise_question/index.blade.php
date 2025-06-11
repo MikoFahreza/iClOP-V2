@@ -3,13 +3,6 @@
 @endsection
 @section('content-header')
     <div class="content-header">
-        <div class="container">
-            <div class="row">
-                <div class="col">
-                    <p>Daftar Soal</p>
-                </div>
-            </div>
-        </div>
     </div>
 @endsection
 
@@ -66,12 +59,17 @@
                     <div id="output" class="row mt-3" style="min-height: 120px;"></div>
                 </div>
                 <!-- Kanan: Navbar Soal -->
+                 
                 <div class="col-md-3">
-                    <div class="nav flex-column nav-pills" style="height: 100%; overflow-y: auto; border-left: 1px solid #eee;">
-                        @foreach($soal as $s)
+                    <div class="d-flex flex-column" style="height: 100%;">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5>Daftar Soal</h5>
+                    </div>
+                    <div class="nav flex-column nav-pills" style="height: 100%; overflow-y: auto; border-left: 5px solid #eee;">
+                        @foreach($daftar_soal as $s)
                             <a 
                                 class="nav-link {{ $s->id == $soal[0]->id ? 'active' : '' }}" 
-                                href="/s/exercise-question/question/{{ $s->exercise_id }}/{{ $s->no }}">
+                                href="/s/exercise-question/{{ $s->exercise_id }}/{{ $s->no }}">
                                 {{ $s->title }}
                             </a>
                         @endforeach

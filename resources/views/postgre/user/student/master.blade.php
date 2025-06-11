@@ -105,11 +105,8 @@
         </div>
 
         <footer class="main-footer">
-            <div class="float-right d-none d-sm-inline">
-                Welcome
-            </div>
-            <strong>Copyright &copy; 2022 <a href="#">iCLOP</a>.</strong> All rights
-            reserved.
+            <center><strong>Copyright &copy; 2023 <a href="#">iCLOP</a>.</strong> All rights
+            reserved.</center>
         </footer>
     </div>
 
