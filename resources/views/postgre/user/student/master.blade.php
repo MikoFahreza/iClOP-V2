@@ -25,7 +25,7 @@
     <link rel="stylesheet" href="{{ asset('postgre/toastr/toastr.min.css') }}">
 </head>
 
-<body class="hold-transition layout-top-nav dark-mode">
+<body class="hold-transition layout-top-nav">
     <div class="wrapper">
         <nav class="main-header navbar navbar-expand-md navbar-dark">
             <div class="container">

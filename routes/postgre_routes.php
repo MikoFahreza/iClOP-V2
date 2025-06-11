@@ -100,7 +100,7 @@ Route::group(['prefix' => 's', 'midddleware' => ['auth', 'isStudent']], function
     Route::post('submittest', [ValidatorXController::class, 'submittest'])->name('student.submittest');
 
     Route::get('exercise', [StudentController::class, 'exercise'])->name('student.exercise');
-    Route::get('exercise-question/{exercise_id}', [StudentController::class, 'exerciseQuestion'])->name('student.exerciseQuestion');
+    Route::get('exercise-question/{exercise_id}/{question_no}', [StudentController::class, 'exerciseQuestion'])->name('student.exerciseQuestion');
 
     Route::get('exercise-question/question/{exercise_id}', [ExerciseQuestionController::class, 'getExerciseQuestionList'])->name('student.exerciseQuestion.questionList');
     Route::get('exercise-question/question/{exercise_id}/{question_no}', [ExerciseQuestionController::class, 'getExerciseQuestionItem'])->name('student.exerciseQuestion.question');

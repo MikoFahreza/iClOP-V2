@@ -27,7 +27,7 @@
                             <div class="icon">
                                 <i class="ion ion-bag"></i>
                             </div>
-                            <a href="{{ route('student.exerciseQuestion', ['exercise_id' => $item->{'id'}]) }}"
+                            <a href="{{ route('student.exerciseQuestion', ['exercise_id' => $item->{'id'}, 'question_no' => 1]) }}"
                                 class="small-box-footer bg-blue"> KERJAKAN <i class="fas fa-arrow-circle-right"></i></a>
                         </div>
                     </div>
