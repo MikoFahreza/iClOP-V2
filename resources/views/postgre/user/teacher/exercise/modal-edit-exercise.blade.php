@@ -59,6 +59,22 @@
                             </div>
                             <span class="text-danger error-text description_error"></span>
                         </div>
+                        <div class="form-row">
+                                <div class="form-group col-sm-12">
+                                    <label for="guidance_update">File Panduan</label>
+                                    <span class="fas fa-question" data-toggle="tooltip_requiredTable"
+                                        data-placement="right" title="Kosongi jika tidak mengubah file panduan."></span>
+                                    <div class="input-group">
+                                        <input type="file" class="form-control" name="guidance_update" data-value="">
+                                        <div class="input-group-append">
+                                            <div class="input-group-text">
+                                                <span class="fas fa-file-pdf"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span class="text-danger error-text guidance_update_error"></span>
+                                </div>
+                            </div>
                     </div>
                     <button type="submit" class="btn btn-warning btn-block">
                         Update

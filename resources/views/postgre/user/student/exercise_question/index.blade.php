@@ -3,6 +3,7 @@
 @endsection
 @section('content-header')
     <div class="content-header">
+        <h2>{{ $soal[0]->name }}</h2>
     </div>
 @endsection
 
@@ -28,7 +29,7 @@
                             @else
                                 <button id="prevBtn" class="btn btn-primary w-100" data-toggle="tooltip"
                                     data-placement="bottom" title="Sebelumnya"
-                                    onclick="window.location.href='/s/exercise-question/question/{{ $soal[0]->exercise_id }}/{{ $soal[0]->no - 1 }}'"><i
+                                    onclick="window.location.href='/s/exercise-question/{{ $soal[0]->exercise_id }}/{{ $soal[0]->no - 1 }}'"><i
                                         class="fa fa-angle-left"></i></button>
                             @endif
                         </div>
@@ -40,7 +41,7 @@
                             @else
                                 <button class="btn btn-primary w-100" data-toggle="tooltip" data-placement="bottom"
                                     title="Selanjutnya"
-                                    onclick="window.location.href='/s/exercise-question/question/{{ $soal[0]->exercise_id }}/{{ $soal[0]->no + 1 }}'">
+                                    onclick="window.location.href='/s/exercise-question/{{ $soal[0]->exercise_id }}/{{ $soal[0]->no + 1 }}'">
                                     <i class="fa fa-angle-right"></i></button>
                             @endif
                         </div>
@@ -62,17 +63,23 @@
                  
                 <div class="col-md-3">
                     <div class="d-flex flex-column" style="height: 100%;">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h5>Daftar Soal</h5>
-                    </div>
-                    <div class="nav flex-column nav-pills" style="height: 100%; overflow-y: auto; border-left: 5px solid #eee;">
-                        @foreach($daftar_soal as $s)
-                            <a 
-                                class="nav-link {{ $s->id == $soal[0]->id ? 'active' : '' }}" 
-                                href="/s/exercise-question/{{ $s->exercise_id }}/{{ $s->no }}">
-                                {{ $s->title }}
-                            </a>
-                        @endforeach
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5>Daftar Soal</h5>
+                        </div>
+                        <div class="nav flex-column nav-pills" style="height: 100%; overflow-y: auto; border-left: 5px solid #eee;">
+                            @foreach($daftar_soal as $s)
+                                <a 
+                                    class="nav-link {{ $s->id == $soal[0]->id ? 'active' : '' }}" 
+                                    href="/s/exercise-question/{{ $s->exercise_id }}/{{ $s->no }}">
+                                    <div>
+                                        <strong>{{ $s->no }}.</strong> {{ $s->topic }}
+                                    </div>
+                                    <div style="font-size: 0.85em; color: #888;">
+                                        {{ $s->title }}
+                                    </div>
+                                </a>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
             </div>
@@ -105,6 +112,7 @@
                             data: {
                                 code: editor.getSession().getValue(),
                                 question_id: "{{ $soal[0]->id }}",
+                                user_id: "{{ Auth::user()->id }}",
                             },
                             success: function(response) {
                                 //$(".output").html(response);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Postgre;
 use App\Models\Postgre\Exercise;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class ExerciseController extends Controller
 {
@@ -19,18 +20,22 @@ class ExerciseController extends Controller
         if ($validator->fails()) {
             return response()->json(['code' => 0, 'error' => $validator->errors()->toArray()]);
         } else {
+            $path = 'function_guidance/';
+            $file = $request->file('guidance');
+            $file_name = $file->getClientOriginalName();
 
+            $upload = $file->storeAs($path, $file_name, 'public');
 
-            $exercise = new Exercise();
-            $exercise->name = $request->name;
-            $exercise->academic_year_id = $request->year_id;
-            $exercise->description = $request->description;
-            $query = $exercise->save();
-
-            if (!$query) {
-                return response()->json(['code' => 0, 'msg' => 'Terjadi kesalahan']);
+            if ($upload) {
+                Exercise::insert([
+                    'name' => $request->name,
+                    'academic_year_id' => $request->year_id,
+                    'description' => $request->description,
+                    'guide' => $file_name,
+                ]);
+                return response()->json(['code' => 1, 'msg' => 'BERHASIL menambahkan latihan baru.']);
             } else {
-                return response()->json(['code' => 1, 'msg' => 'Latihan baru berhasil ditambahkan']);
+                return response()->json(['code' => 0, 'msg' => 'GAGAL menambahkan latihan baru.']);
             }
         }
     }
@@ -54,15 +59,32 @@ class ExerciseController extends Controller
             return response()->json(['code' => 0, 'error' => $validator->errors()->toArray()]);
         } else {
             $exercise = Exercise::find($eid);
-            $exercise->name = $request->name;
-            $exercise->academic_year_id = $request->academic_year_id;
-            $exercise->description = $request->description;
-            $query = $exercise->save();
+            $path = 'function_guidance/';
+            if ($request->hasFile('guidance_update')) {
+                $file_path = $path . $exercise->guidance;
+                if ($exercise->guidance != null && Storage::disk('public')->exists($file_path)) {
+                    Storage::disk('public')->delete($file_path);
+                }
+                $file = $request->file('guidance_update');
+                $file_name = $file->getClientOriginalName();
+                $upload = $file->storeAs($path, $file_name, 'public');
 
-            if (!$query) {
-                return response()->json(['code' => 0, 'msg' => 'Terjadi kesalahan']);
+                if ($upload) {
+                    $exercise->update([
+                        'name' => $request->name,
+                        'academic_year_id' => $request->academic_year_id,
+                        'description' => $request->description,
+                        'guide' => $file_name,
+                    ]);
+                    return response()->json(['code' => 1, 'msg' => 'BERHASIL memperbarui data latihan.']);
+                }
             } else {
-                return response()->json(['code' => 1, 'msg' => 'Tahun Ajaran berhasil diperbarui']);
+                $exercise->update([
+                    'name' => $request->name,
+                    'academic_year_id' => $request->academic_year_id,
+                    'description' => $request->description,
+                ]);
+                return response()->json(['code' => 1, 'msg' => 'BERHASIL memperbarui data latihan.']);
             }
         }
     }

@@ -50,6 +50,22 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="form-row">
+                                        <div class="form-group col-sm-12">
+                                            <label for="guidance">File Panduan
+                                            </label>
+                                            <div class="input-group">
+                                                <input type="file" class="form-control" name="guidance"
+                                                    data-value="">
+                                                <div class="input-group-append">
+                                                    <div class="input-group-text">
+                                                        <span class="fas fa-file-pdf"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <span class="text-danger error-text guidance_error"></span>
+                                        </div>
+                                    </div>
                         <button type="submit" class="btn btn-block btn-info">Tambah</button>
                     </form>
                 </div>

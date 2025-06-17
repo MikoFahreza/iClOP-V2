@@ -31,9 +31,7 @@ class QuestionController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required|string',
             'topic' => 'required|string',
-            'dbname' => 'required|string',
             'description' => 'required|string',
-            'required_table' => 'string',
             'test_code' => 'required|string',
             'guidance' => 'required|mimes:pdf|max:2048',
         ]);
@@ -52,9 +50,7 @@ class QuestionController extends Controller
                 Question::insert([
                     'title' => $request->title,
                     'topic' => $request->topic,
-                    'dbname' => $request->dbname,
                     'description' => $request->description,
-                    'required_table' => $request->required_table,
                     'test_code' => $request->test_code,
                     'guide' => $file_name,
                 ]);
@@ -81,7 +77,6 @@ class QuestionController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required|string',
             'topic' => 'required|string',
-            'dbname' => 'required|string',
             'description' => 'required|string',
             'test_code' => 'required|string',
             'guidance_update' => 'mimes:pdf|max:2048|unique:postgre_question,guide',
@@ -103,9 +98,7 @@ class QuestionController extends Controller
                     $task->update([
                         'title' => $request->title,
                         'topic' => $request->topic,
-                        'dbname' => $request->dbname,
                         'description' => $request->description,
-                        'required_table' => $request->required_table,
                         'test_code' => $request->test_code,
                         'guide' => $file_name,
                     ]);
@@ -115,9 +108,7 @@ class QuestionController extends Controller
                 $task->update([
                     'title' => $request->title,
                     'topic' => $request->topic,
-                    'dbname' => $request->dbname,
                     'description' => $request->description,
-                    'required_table' => $request->required_table,
                     'test_code' => $request->test_code,
                 ]);
                 return response()->json(['code' => 1, 'msg' => 'BERHASIL memperbarui data soal.']);

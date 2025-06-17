@@ -19,6 +19,14 @@
 @endsection
 
 @section('content')
+<style>
+    .text-truncate-custom {
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+</style>
     <div class="content">
         <div class="content">
             <div class="container">
@@ -72,11 +80,20 @@
                                             <div class="input-group">
                                                 <select class="form-control" name="topic">
                                                     <option selected disabled>- Pilih Topik -</option>
-                                                    <option value="CREATE Database">CREATE Database</option>
-                                                    <option value="CREATE Table">CREATE Table</option>
-                                                    <option value="ALTER Table">ALTER Table</option>
-                                                    <option value="DROP Table">DROP Table</option>
-                                                    <option value="DROP Database">DROP Database</option>
+                                                    <option value="ABS">ABS</option>
+                                                    <option value="LENGTH">LENGTH</option>
+                                                    <option value="CURRENT_DATE">CURRENT_DATE</option>
+                                                    <option value="SUM">SUM</option>
+                                                    <option value="AVG">AVG</option>
+                                                    <option value="MAX">MAX</option>
+                                                    <option value="MAX">MIN</option>
+                                                    <option value="SCALAR FUNCTION">SCALAR FUNCTION</option>
+                                                    <option value="SET RETURNING FUNCTION">SET RETURNING FUNCTION</option>
+                                                    <option value="TABLE RETURNING FUNCTION">TABLE RETURNING FUNCTION</option>
+                                                    <option value="CREATE STORED PROCEDURE">CREATE PROCEDURE</option>
+                                                    <option value="ALTER STORED PROCEDURE">ALTER PROCEDURE</option>
+                                                    <option value="CALL STORED PROCEDURE">CALL PROCEDURE</option>
+                                                    <option value="DROP STORED PROCEDURE">DROP PROCEDURE</option>
                                                 </select>
                                                 <div class="input-group-append">
                                                     <div class="input-group-text">
@@ -85,24 +102,6 @@
                                                 </div>
                                             </div>
                                             <span class="text-danger error-text topic_error"></span>
-                                        </div>
-                                    </div>
-                                    <div class="form-row">
-                                        <div class="form-group col-sm-12">
-                                            <label for="dbname">Nama Database </label>
-                                            <span class="fas fa-question" data-toggle="tooltip_dbname"
-                                                data-placement="right"
-                                                title="Nama Database yang akan digunakan untuk pembelajaran."></span>
-                                            <div class="input-group">
-                                                <input type="text" class="form-control" name="dbname"
-                                                    placeholder="Nama database">
-                                                <div class="input-group-append">
-                                                    <div class="input-group-text">
-                                                        <span class="fas fa-database"></span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <span class="text-danger error-text dbname_error"></span>
                                         </div>
                                     </div>
                                     <div class="form-row">
@@ -117,23 +116,6 @@
                                                 </div>
                                             </div>
                                             <span class="text-danger error-text description_error"></span>
-                                        </div>
-                                    </div>
-                                    <div class="form-row">
-                                        <div class="form-group col-sm-12">
-                                            <label for="required_table">Required Table</label>
-                                            <span class="fas fa-question" data-toggle="tooltip_requiredTable"
-                                                data-placement="right"
-                                                title="TIDAK WAJIB DIISI. Digunakan untuk membuat tabel yang dibutuhkan untuk pemebelajaran."></span>
-                                            <div class="input-group">
-                                                <textarea rows="5" type="text" class="form-control" name="required_table" placeholder="Required table"></textarea>
-                                                <div class="input-group-append">
-                                                    <div class="input-group-text">
-                                                        <span class="fas fa-code"></span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <span class="text-danger error-text required_table_error"></span>
                                         </div>
                                     </div>
                                     <div class="form-row">
@@ -214,32 +196,37 @@
             $('.testCodeBox').toggle();
         });
         $('#tabel_soal').DataTable({
-            processing: true,
-            info: true,
-            serverSide: true,
-            ajax: "{{ route('teacher.question.datatable') }}",
-            columns: [{
-                    data: "id",
-                    name: "id"
-                },
-                {
-                    data: "title",
-                    name: "title"
-                },
-                {
-                    data: "topic",
-                    name: "topic"
-                },
-                {
-                    data: "description",
-                    name: "description"
-                },
-                {
-                    data: "actions",
-                    name: "actions"
-                },
-            ]
-        });
+        processing: true,
+        info: true,
+        serverSide: true,
+        ajax: "{{ route('teacher.question.datatable') }}",
+        columns: [
+            { data: "id", name: "id" },
+            {
+                data: "title",
+                name: "title",
+                render: function (data, type, row) {
+                    return '<div class="text-truncate-custom" title="' + data + '">' + data + '</div>';
+                }
+            },
+            {
+                data: "topic",
+                name: "topic",
+                render: function (data, type, row) {
+                    return '<div class="text-truncate-custom" title="' + data + '">' + data + '</div>';
+                }
+            },
+            {
+                data: "description",
+                name: "description",
+                render: function (data, type, row) {
+                    return '<div class="text-truncate-custom" title="' + data + '">' + data + '</div>';
+                }
+            },
+            { data: "actions", name: "actions" },
+        ]
+    });
+
 
         $('#add_question').on('submit', function(e) {
             e.preventDefault();

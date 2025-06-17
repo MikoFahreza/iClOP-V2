@@ -91,8 +91,19 @@ class ValidatorXController extends Controller
             pg_query($conn, 'ROLLBACK;');
             $this->disconnectFromDatabase($conn);
 
+            if (!$testInfo['allow']) {
+                Submission::updateOrCreate(
+                    ['student_id' => $request->user_id, 'question_id' => $request->question_id],
+                    ['status' => 'Failed', 'solution' => $request->code]
+                );
+            }
+
             return response()->json(['result' => $testInfo['output']]);
         } catch (\Exception $e) {
+            Submission::updateOrCreate(
+    ['student_id' => $request->user_id, 'question_id' => $request->question_id],
+        ['status' => 'Failed', 'solution' => $request->code]
+            );
             return response()->json(['result' => $this->displayError($e->getMessage())]);
         }
     }
