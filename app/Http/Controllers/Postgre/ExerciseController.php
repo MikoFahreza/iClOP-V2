@@ -13,7 +13,6 @@ class ExerciseController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
-            'year_id' => 'required|numeric',
             'description' => 'required|string',
         ]);
 
@@ -29,7 +28,6 @@ class ExerciseController extends Controller
             if ($upload) {
                 Exercise::insert([
                     'name' => $request->name,
-                    'academic_year_id' => $request->year_id,
                     'description' => $request->description,
                     'guide' => $file_name,
                 ]);
@@ -42,7 +40,7 @@ class ExerciseController extends Controller
 
     public function getExerciseDetail(Request $request)
     {
-        $detail = Exercise::with('year')->where('id', $request->eid)->get();
+        $detail = Exercise::where('id', $request->eid)->get();
         return response()->json(['code' => 1, 'details' => $detail]);
     }
 
@@ -51,7 +49,6 @@ class ExerciseController extends Controller
         $eid = $request->eid;
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
-            'academic_year_id' => 'required',
             'description' => 'required|string',
         ]);
 
@@ -72,7 +69,6 @@ class ExerciseController extends Controller
                 if ($upload) {
                     $exercise->update([
                         'name' => $request->name,
-                        'academic_year_id' => $request->academic_year_id,
                         'description' => $request->description,
                         'guide' => $file_name,
                     ]);
@@ -81,7 +77,6 @@ class ExerciseController extends Controller
             } else {
                 $exercise->update([
                     'name' => $request->name,
-                    'academic_year_id' => $request->academic_year_id,
                     'description' => $request->description,
                 ]);
                 return response()->json(['code' => 1, 'msg' => 'BERHASIL memperbarui data latihan.']);
@@ -91,7 +86,7 @@ class ExerciseController extends Controller
 
     public function getExerciseAsOption(Request $request)
     {
-        $data['exercise'] = Exercise::where('academic_year_id', $request->yid)->get();
+        $data['exercise'] = Exercise::all();
         return response()->json($data);
     }
 

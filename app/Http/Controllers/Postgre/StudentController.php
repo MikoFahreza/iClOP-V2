@@ -20,7 +20,7 @@ class StudentController extends Controller
 
     public function exercise()
     {
-        $exercise = Exercise::with('year')->get();
+        $exercise = Exercise::all();
         return view('postgre.user.student.exercise.index', compact('exercise'));
     }
 
@@ -46,7 +46,7 @@ class StudentController extends Controller
 
     public function result()
     {
-        $exercise = Exercise::with('year')->get();
+        $exercise = Exercise::all();
         return view('postgre.user.student.result.index', compact('exercise'));
     }
 
@@ -59,7 +59,7 @@ class StudentController extends Controller
             ->where('postgre_exercise_question.exercise_id', $request->exercise_id)
             ->where('postgre_submissions.student_id', Auth::user()->id)->get()->count();
             
-        $question = DB::table('postgre_exercise_question')->where('exercise_id', 1)->get()->count();
+        $question = DB::table('postgre_exercise_question')->where('exercise_id', $exercise_id)->get()->count();
         $result = floor(($passed / $question) * 100);
         return view('postgre.user.student.result.resultByExercise', compact('exercise_id', 'passed', 'question', 'result'));
     }

@@ -30,19 +30,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <select name="year_id" class="form-control">
-                                        <option value="" disabled selected>Tahun Ajaran</option>
-                                        @forelse ($year as $item)
-                                            <option value="{{ $item->{'id'} }}">{{ $item->{'name'} }}</option>
-                                        @empty
-                                            <option disabled>Not Found</option>
-                                        @endforelse
-                                    </select>
-                                    <span class="text-danger error-text year_id_error"></span>
-                                </div>
-                            </div>
+                            
                             <div class="col-sm-6">
                                 <div class="form-group">
                                     <input type="text" name="description" class="form-control" placeholder="Deskripsi">
@@ -89,11 +77,8 @@
                                         <div class="text-center">
                                             <i class="fa-solid fa-building-columns"></i>
                                         </div>
-                                        <hr>
                                         <h3 class="profile-username text-center">{{ $item->{'name'} }}</h3>
-                                        <p class="text-center text-muted">
-                                            {{ $item->year->{'name'} }}
-                                        </p>
+                                        
                                         <button class="btn btn-primary btn-block" id="exerciseDetailBtn"
                                             data-id={{ $item->{'id'} }}><b>Detail</b></button>
                                         <a href="{{ route('teacher.exerciseQuestion', ['exercise_id' => $item->{'id'}]) }}" class="btn btn-success btn-block"
@@ -163,10 +148,6 @@
                         .find("form")
                         .find('input[name="name"]')
                         .val(data.details[0].name);
-                    $(exerciseModal)
-                        .find("form")
-                        .find('select[name="academic_year_id"]')
-                        .val(data.details[0].academic_year_id);
                     $(exerciseModal)
                         .find("form")
                         .find('input[name="description"]')

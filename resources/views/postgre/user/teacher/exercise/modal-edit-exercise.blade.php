@@ -29,25 +29,6 @@
                         </div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group col-lg-6">
-                            <label for="academic_year_id">Tahun Ajaran</label>
-                            <div class="input-group">
-                                <select name="academic_year_id" class="form-control" id="semeseter">
-                                    @forelse ($year as $item)
-                                        <option value="{{ $item->{'id'} }}">{{ $item->{'name'} }}</option>
-                                    @empty
-                                        <option disabled>Not Found</option>
-                                    @endforelse
-                                </select>
-                                <div class="input-group-append">
-                                    <div class="input-group-text">
-                                        <span class="fas fa-book"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <span class="text-danger error-text academic_year_id_error"></span>
-                        </div>
-                        <div class="form-group col-lg-6">
                             <label for="name">Deskripsi</label>
                             <div class="input-group">
                                 <input type="text" class="form-control" name="description" placeholder="Deskripsi" />
@@ -58,7 +39,6 @@
                                 </div>
                             </div>
                             <span class="text-danger error-text description_error"></span>
-                        </div>
                         <div class="form-row">
                                 <div class="form-group col-sm-12">
                                     <label for="guidance_update">File Panduan</label>

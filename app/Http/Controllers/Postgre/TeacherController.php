@@ -42,17 +42,15 @@ class TeacherController extends Controller
 
     public function exercise()
     {
-        $exercise = Exercise::with('year')->paginate(3);
-        $year = AcademicYear::where('status', 'Aktif')->get();
-        return view('postgre.user.teacher.exercise.index', compact('exercise', 'year'));
+        $exercise = Exercise::paginate(3);
+        return view('postgre.user.teacher.exercise.index', compact('exercise'));
     }
 
     public function exerciseQuestion(Request $request)
     {
-        $exercise = Exercise::with('year')->paginate(3);
-        $year = AcademicYear::where('status', 'Aktif')->get();
+        $exercise = Exercise::paginate(3);
         $exercise_id = $request->exercise_id;
-        return view('postgre.user.teacher.exerciseQuestion.index',compact('exercise', 'year','exercise_id'));
+        return view('postgre.user.teacher.exerciseQuestion.index',compact('exercise', 'exercise_id'));
     }
 
     public function exerciseResult(Request $request)

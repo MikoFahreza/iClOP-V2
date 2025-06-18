@@ -53,7 +53,6 @@
                             style="width: 100%">
                             <thead>
                                 <th>Nama</th>
-                                <th>Kelas</th>
                                 <th>Passed</th>
                                 <th>Jumlah Soal</th>
                                 <th>Nilai Latihan</th>
@@ -75,7 +74,7 @@
             processing: true,
             info: true,
             serverSide: true,
-            ajax: "{{ route('teacher.exerciseResultByExerciseDataTable', ['class_id' => $class_id, 'exercise_id' => 1]) }}",
+            ajax: "{{ route('teacher.exerciseResultByExerciseDataTable', ['exercise_id' => 2]) }}",
             dom: 'Bfrtip',
             buttons: [
                 'excelHtml5',
@@ -84,10 +83,6 @@
             columns: [{
                     data: "username",
                     name: "username",
-                },
-                {
-                    data: "classname",
-                    name: "classname",
                 },
                 {
                     data: "passed",
@@ -126,7 +121,7 @@
                         });
                     } else {
                         var newurl =
-                            "{{ route('teacher.exerciseResultByExerciseDataTable', ['class_id' => $class_id, 'exercise_id' => -1]) }}"
+                            "{{ route('teacher.exerciseResultByExerciseDataTable', ['exercise_id' => -1]) }}"
                             .replace("-1", data.msg);
                         $("#class_student_table").DataTable().ajax.url(newurl).load();
                     }

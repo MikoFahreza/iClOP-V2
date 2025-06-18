@@ -13,8 +13,7 @@ class ExerciseResultController extends Controller
     public function exerciseResultByClass(Request $request)
     {
         $exercise = Exercise::all();
-        $class_id = $request->class_id;
-        return view('postgre.user.teacher.exerciseResult.exerciseResultByClass', compact('exercise', 'class_id'));
+        return view('postgre.user.teacher.exerciseResult.exerciseResultByClass', compact('exercise'));
     }
 
     public function getExerciseIDForDataTable(Request $request)
@@ -32,13 +31,10 @@ class ExerciseResultController extends Controller
 
     public function exerciseResultByExerciseDataTable(Request $request)
     {
-        $class_id = $request->class_id;
 
-        $student = DB::table('postgre_class_student')
-            ->join('postgre_class', 'postgre_class_student.class_id', 'postgre_class.id')
-            ->join('users', 'postgre_class_student.student_id', 'users.id')
-            ->where('postgre_class_student.class_id', $class_id)
-            ->select('users.id', 'users.name as username', 'postgre_class.name as classname')
+        $student = DB::table('users')
+            ->where('users.role', 'student')
+            ->select('users.id', 'users.name as username')
             ->get();
 
         return DataTables::of($student)

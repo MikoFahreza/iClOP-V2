@@ -22,7 +22,6 @@
                         <div class="small-box bg-dark">
                             <div class="inner">
                                 <h3>{{ $item->{'name'} }}</h3>
-                                <p>{{ $item->year->{'name'} }}</p>
                             </div>
                             <div class="icon">
                                 <i class="ion ion-bag"></i>

@@ -21,25 +21,6 @@
                         id="select_exercise_form">
                         @csrf
                         <div class="row">
-                            <div class="col-lg-12">
-                                <div class="form-group">
-                                    <div class="form-group">
-                                        <select name="academic_year_id" class="form-control" id="year-dropdown">
-                                            <option value="" disabled selected>Tahun Ajaran</option>
-                                            @forelse ($year as $item)
-                                                <option value="{{ $item->{'id'} }}">{{ $item->{'name'} }}
-                                                </option>
-                                            @empty
-                                                <option value="" disabled>No Data
-                                                </option>
-                                            @endforelse
-                                        </select>
-                                        <span class="text-danger error-text year_academic_id_error"></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
                             <div class="col-sm-6">
                                 <div class="form-group">
                                     <select name="exercise_id" class="form-control" id="exercise-dropdown">
@@ -134,21 +115,23 @@
             ],
         });
 
-        $('#year-dropdown').on('change', function() {
-            var yid = this.value;
-            $("#exercise-dropdown").html('');
+        $(document).ready(function() {
+            // Setup CSRF token untuk semua request AJAX POST
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            });
+
+            // Isi dropdown exercise saat halaman dimuat
             $.ajax({
                 url: "{{ route('teacher.exercise.getExerciseAsOption') }}",
                 type: "POST",
-                data: {
-                    yid: yid,
-                },
                 dataType: 'json',
                 success: function(result) {
                     $('#exercise-dropdown').html('<option value="" disabled selected>Latihan</option>');
                     $.each(result.exercise, function(key, value) {
-                        $("#exercise-dropdown").append('<option value="' + value
-                            .id + '">' + value.name + '</option>');
+                        $("#exercise-dropdown").append('<option value="' + value.id + '">' + value.name + '</option>');
                     });
                 }
             });

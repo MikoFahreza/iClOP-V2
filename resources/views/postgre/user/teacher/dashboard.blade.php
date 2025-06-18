@@ -27,7 +27,7 @@
                         <div class="icon">
                             
                         </div>
-                        <a href="{{route('teacher.exerciseResult')}}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                        <a href="{{route('teacher.exerciseResultByClass')}}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                     </div>
                 </div>
 

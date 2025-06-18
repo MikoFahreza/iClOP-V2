@@ -9,14 +9,8 @@ class Exercise extends Model
     protected $table = 'postgre_exercise';
 
     protected $fillable = [
-        'academic_year_id',
         'name',
         'description',
         'guide',
     ];
-
-    public function year()
-    {
-        return $this->belongsTo(AcademicYear::class, 'academic_year_id', 'id');
-    }
 }
