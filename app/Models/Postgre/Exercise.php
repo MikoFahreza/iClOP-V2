@@ -12,5 +12,6 @@ class Exercise extends Model
         'name',
         'description',
         'guide',
+        'duration', // durasi dalam detik
     ];
 }

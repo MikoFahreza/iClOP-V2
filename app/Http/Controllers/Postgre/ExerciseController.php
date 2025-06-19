@@ -14,6 +14,7 @@ class ExerciseController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
             'description' => 'required|string',
+            'duration' => 'required|integer|min:1',
         ]);
 
         if ($validator->fails()) {
@@ -30,6 +31,7 @@ class ExerciseController extends Controller
                     'name' => $request->name,
                     'description' => $request->description,
                     'guide' => $file_name,
+                    'duration' => $request->duration * 60, // simpan dalam detik
                 ]);
                 return response()->json(['code' => 1, 'msg' => 'BERHASIL menambahkan latihan baru.']);
             } else {
@@ -50,6 +52,7 @@ class ExerciseController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
             'description' => 'required|string',
+            'duration' => 'required|integer|min:1',
         ]);
 
         if ($validator->fails()) {
@@ -71,6 +74,7 @@ class ExerciseController extends Controller
                         'name' => $request->name,
                         'description' => $request->description,
                         'guide' => $file_name,
+                        'duration' => $request->duration * 60,
                     ]);
                     return response()->json(['code' => 1, 'msg' => 'BERHASIL memperbarui data latihan.']);
                 }
@@ -78,6 +82,7 @@ class ExerciseController extends Controller
                 $exercise->update([
                     'name' => $request->name,
                     'description' => $request->description,
+                    'duration' => $request->duration * 60,
                 ]);
                 return response()->json(['code' => 1, 'msg' => 'BERHASIL memperbarui data latihan.']);
             }
