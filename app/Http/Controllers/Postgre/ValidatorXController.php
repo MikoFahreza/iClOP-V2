@@ -79,8 +79,8 @@ class ValidatorXController extends Controller
     {
         $test = Question::findOrFail($request->question_id);
         $this->test_code = $test->test_code;
-        // $this->topic = $test->topic;
-        $dbname = 'praktikum_penjualan';
+        $userId = $request->user_id;
+        $dbname = "latihan_{$userId}_{$request->exercise_id}";
 
         try {
             $conn = $this->connectToDatabase($dbname);
@@ -92,18 +92,22 @@ class ValidatorXController extends Controller
             $this->disconnectFromDatabase($conn);
 
             if (!$testInfo['allow']) {
-                Submission::updateOrCreate(
-                    ['student_id' => $request->user_id, 'question_id' => $request->question_id],
-                    ['status' => 'Failed', 'solution' => $request->code]
-                );
+                Submission::insert([
+                    'student_id' => $userId,
+                    'question_id' => $request->question_id,
+                    'status' => 'Failed',
+                    'solution' => $request->code
+                ]);
             }
 
             return response()->json(['result' => $testInfo['output']]);
         } catch (\Exception $e) {
-            Submission::updateOrCreate(
-    ['student_id' => $request->user_id, 'question_id' => $request->question_id],
-        ['status' => 'Failed', 'solution' => $request->code]
-            );
+            Submission::insert([
+                    'student_id' => $userId,
+                    'question_id' => $request->question_id,
+                    'status' => 'Failed',
+                    'solution' => $request->code
+                ]);
             return response()->json(['result' => $this->displayError($e->getMessage())]);
         }
     }
@@ -112,8 +116,8 @@ class ValidatorXController extends Controller
     {
         $test = Question::findOrFail($request->task_id);
         $this->test_code = $test->test_code;
-        // $this->topic = $test->topic;
-        $dbname = 'praktikum_penjualan';
+        $userId = $request->user_id;
+        $dbname = "latihan_{$userId}_{$request->exercise_id}";
 
         try {
             $conn = $this->connectToDatabase($dbname);
@@ -121,7 +125,13 @@ class ValidatorXController extends Controller
             $this->executeCode($conn, $request->code);
             $result = $this->executeTest($conn, $this->test_code);
             $testInfo = $this->displayTestResult($result);
-            pg_query($conn, 'ROLLBACK;');
+
+            if ($testInfo['allow']) {
+                pg_query($conn, 'COMMIT;');
+            } else {
+                pg_query($conn, 'ROLLBACK;');
+            }
+
             $this->disconnectFromDatabase($conn);
 
             Submission::updateOrCreate(

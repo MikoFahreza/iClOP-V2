@@ -2,15 +2,17 @@
     iCLOP | Daftar Soal
 @endsection
 @section('content-header')
-    <div class="content-header">
-        <h2>{{ $soal[0]->name }}</h2>
+    <div class="d-flex justify-content-center align-items-center" style="height: 100%;">
+        <div class="content-header text-center">
+            <h2>{{ $soal[0]->name }}</h2>
+        </div>
     </div>
 @endsection
 
 @section('content')
     <div class="content">
         <div class="container-fluid">
-            <div class="row" style="height: 600px;">
+            <div class="row"> <!-- Hapus style="height: 600px;" -->
                 <!-- Kiri: Preview Guidance -->
                 <div class="col-md-4">
                     @if(count($soal) > 0)
@@ -53,7 +55,9 @@
                         </div>
                         <div class="col-6">
                             <button id="submitButton" class="btn btn-outline-warning w-100" data-toggle="tooltip"
-                                data-placement="bottom" title="Submit"><i class="fa fa-check-double"></i></button>
+                                data-placement="bottom" title="Submit">
+                                <i class="fa fa-check-double"></i>
+                            </button>
                         </div>
                     </div>
                     <!-- Output/Alert -->
@@ -85,6 +89,17 @@
             </div>
         </div>
     </div>
+
+    <div id="exercise-timer" style="position:fixed;top:30px;right:30px;z-index:9999;background:#fff;padding:10px 20px;border-radius:8px;box-shadow:0 2px 8px #0001;font-weight:bold;font-size:18px;color:#d9534f">
+        Sisa Waktu: <span id="timer-text">--:--</span>
+    </div>
+
+    <button id="finishTestBtn" class="btn btn-danger"
+        style="position: fixed; bottom: 30px; right: 30px; z-index: 9999;"
+        data-toggle="tooltip" title="Selesaikan Tes & Hapus Database">
+        <i class="fa fa-trash"></i> Selesaikan Tes
+    </button>
+
     <script src="{{ asset('postgre/editor/ide.js') }} "></script>
     <script src="{{ asset('postgre/editor/ace-editor/ace.js') }} "></script>
     <script src="{{ asset('postgre/editor/ace-editor/mode-pgsql.js') }} "></script>
@@ -97,6 +112,81 @@
 
 @section('script')
     <script>
+        // Timer settings (in seconds)
+        var timerDuration = @json(isset($soal[0]->duration) ? $soal[0]->duration : 1800); // dari database, fallback 30 menit
+        var timerKey = 'icloptimer_{{ $exercise_id }}_{{ Auth::user()->id }}';
+        var timerInterval = null;
+        var remaining = timerDuration;
+        
+        // Load timer from localStorage if exists
+        if(localStorage.getItem(timerKey)) {
+            remaining = parseInt(localStorage.getItem(timerKey));
+        }
+        
+        function updateTimerDisplay() {
+            var m = Math.floor(remaining / 60);
+            var s = remaining % 60;
+            document.getElementById('timer-text').textContent = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        }
+        
+        function finishTestAuto() {
+            // Otomatis selesaikan latihan
+            $.ajax({
+                url: "{{ route('student.finishTest') }}",
+                method: "POST",
+                data: {
+                    exercise_id: "{{ $exercise_id }}",
+                    user_id: "{{ Auth::user()->id }}",
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function(response) {
+                    toastr.success('Waktu habis! Latihan otomatis diselesaikan.');
+                    setTimeout(() => window.location.href = "{{ route('student.exercise') }}", 2000);
+                },
+                error: function() {
+                    toastr.error('Gagal menyelesaikan tes!');
+                }
+            });
+        }
+        
+        function startTimer() {
+            if(timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(function() {
+                if(remaining > 0) {
+                    remaining--;
+                    localStorage.setItem(timerKey, remaining);
+                    updateTimerDisplay();
+                } else {
+                    clearInterval(timerInterval);
+                    localStorage.removeItem(timerKey);
+                    finishTestAuto();
+                }
+            }, 1000);
+        }
+        
+        function pauseTimer() {
+            if(timerInterval) clearInterval(timerInterval);
+        }
+        
+        // Pause timer saat tab tidak aktif
+        document.addEventListener('visibilitychange', function() {
+            if(document.hidden) {
+                pauseTimer();
+            } else {
+                startTimer();
+            }
+        });
+        
+        // Reset timer jika latihan selesai manual
+        $('#finishTestBtn').click(function() {
+            localStorage.removeItem(timerKey);
+        });
+        
+        // Inisialisasi timer saat halaman siap
+        $(document).ready(function() {
+            updateTimerDisplay();
+            startTimer();
+        });
         $(document).ready(function() {
                 $('#runButton').click(function() {
                     if (editor.getSession().getValue() == "") {
@@ -113,6 +203,7 @@
                                 code: editor.getSession().getValue(),
                                 question_id: "{{ $soal[0]->id }}",
                                 user_id: "{{ Auth::user()->id }}",
+                                exercise_id: "{{ $exercise_id }}",
                             },
                             success: function(response) {
                                 //$(".output").html(response);
@@ -145,7 +236,8 @@
                         data: {
                             code: editor.getSession().getValue(),
                             task_id: "{{ $soal[0]->id }}",
-                            user_id: "{{ Auth::user()->id }}"
+                            user_id: "{{ Auth::user()->id }}",
+                            exercise_id: "{{ $exercise_id }}",
                         },
                         success: function(response) {
                             $("#output").html(response.result);
@@ -174,6 +266,26 @@
                     output.remove();
                 });
 
+            });
+            $('#finishTestBtn').click(function() {
+                if(confirm('Yakin ingin menyelesaikan latihan? Semua jawaban yang belum disubmit akan dianggap salah dan database akan dihapus!')) {
+                    $.ajax({
+                        url: "{{ route('student.finishTest') }}",
+                        method: "POST",
+                        data: {
+                            exercise_id: "{{ $exercise_id }}",
+                            user_id: "{{ Auth::user()->id }}",
+                            _token: "{{ csrf_token() }}"
+                        },
+                        success: function(response) {
+                            toastr.success(response.message);
+                            setTimeout(() => window.location.href = "{{ route('student.exercise') }}", 2000);
+                        },
+                        error: function() {
+                            toastr.error('Gagal menyelesaikan tes!');
+                        }
+                    });
+                }
             });
         $('#tabel_soal').DataTable({
             processing: true,

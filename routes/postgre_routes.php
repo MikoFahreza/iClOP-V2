@@ -109,6 +109,9 @@ Route::group(['prefix' => 's', 'midddleware' => ['auth', 'isStudent']], function
     Route::get('result/exercise/{exercise_id}', [StudentController::class, 'resultByExercise'])->name('student.result.byExercise');
     Route::get('result/exercise/list/{exercise_id}', [StudentController::class, 'getResultByExerciseDataTable'])->name('student.result.getByExerciseDataTable');
     Route::get('result/exercise/detail/solution', [StudentController::class, 'getSubmissionResultDetail'])->name('student.result.getSubmissionDetail');
+
+    // Route untuk menyelesaikan tes
+    Route::post('finish-test', [StudentController::class, 'finishTest'])->name('student.finishTest');
 });
 
 
