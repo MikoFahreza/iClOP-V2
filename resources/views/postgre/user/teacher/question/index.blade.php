@@ -90,10 +90,11 @@
                                                     <option value="SCALAR FUNCTION">SCALAR FUNCTION</option>
                                                     <option value="SET RETURNING FUNCTION">SET RETURNING FUNCTION</option>
                                                     <option value="TABLE RETURNING FUNCTION">TABLE RETURNING FUNCTION</option>
-                                                    <option value="CREATE STORED PROCEDURE">CREATE PROCEDURE</option>
-                                                    <option value="ALTER STORED PROCEDURE">ALTER PROCEDURE</option>
-                                                    <option value="CALL STORED PROCEDURE">CALL PROCEDURE</option>
-                                                    <option value="DROP STORED PROCEDURE">DROP PROCEDURE</option>
+                                                    <option value="SELECT FUNCTION">SELECT FUNCTION</option>
+                                                    <option value="CREATE PROCEDURE">CREATE PROCEDURE</option>
+                                                    <option value="ALTER PROCEDURE">ALTER PROCEDURE</option>
+                                                    <option value="CALL PROCEDURE">CALL PROCEDURE</option>
+                                                    <option value="DROP PROCEDURE">DROP PROCEDURE</option>
                                                 </select>
                                                 <div class="input-group-append">
                                                     <div class="input-group-text">
@@ -141,6 +142,23 @@
                                                     END;
                                                     $$;
                                                     SELECT * FROM runtests('public'::name);
+
+                                                    JIKA JAWABAN YANG DIHARAPKAN BERUPA SELECT
+                                                    GUNAKAN TEMPLATE BERIKUT:
+                                                    CREATE EXTENSION IF NOT EXISTS pgtap;
+                                                    SELECT plan(1);
+                                                    CREATE OR REPLACE FUNCTION test_jawaban(mahasiswa_query TEXT)
+                                                    RETURNS SETOF TEXT LANGUAGE plpgsql AS $$
+                                                    BEGIN
+                                                    SET LOCAL pgtap.skip_plan = true;
+
+                                                    RETURN NEXT results_eq(
+                                                        mahasiswa_query,
+                                                        'SELECT ABS(selisih_pembayaran) AS selisih_abs FROM transaksi WHERE id = 3', 
+                                                        'Selisih pembayaran transaksi id 3 = 20000' 
+                                                    ); -- sesuaikan dengan jawaban yang diharapkan
+                                                    END;
+                                                    $$;
                                                 </code>
                                                 <p>Dokumentasi selengkapnya dapat dilihat <a
                                                         href="https://pgtap.org/documentation.html"
@@ -185,7 +203,13 @@
         serverSide: true,
         ajax: "{{ route('teacher.question.datatable') }}",
         columns: [
-            { data: "id", name: "id" },
+            {
+                data: null,
+                name: "no",
+                render: function (data, type, row, meta) {
+                    return meta.row + 1; // nomor urut mulai dari 1
+                }
+            },
             {
                 data: "title",
                 name: "title",

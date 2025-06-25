@@ -60,6 +60,8 @@
                             </button>
                         </div>
                     </div>
+                    <!-- Tambahkan div baru untuk hasil executeCode -->
+                    <div id="run-output" class="row mt-3"></div>
                     <!-- Output/Alert -->
                     <div id="output" class="row mt-3" style="min-height: 120px;"></div>
                 </div>
@@ -204,9 +206,10 @@
                                 question_id: "{{ $soal[0]->id }}",
                                 user_id: "{{ Auth::user()->id }}",
                                 exercise_id: "{{ $exercise_id }}",
+                                time_left: remaining // <-- tambahkan ini
                             },
                             success: function(response) {
-                                //$(".output").html(response);
+                                $("#run-output").html(response.run_output ? response.run_output : '');
                                 $("#output").html(response.result);
                                 $("#runButton").attr("disabled", false)
                                 $("#runButton").html("<i class='fas fa-play'></i> Run");
@@ -238,6 +241,7 @@
                             task_id: "{{ $soal[0]->id }}",
                             user_id: "{{ Auth::user()->id }}",
                             exercise_id: "{{ $exercise_id }}",
+                            time_left: remaining // <-- tambahkan ini
                         },
                         success: function(response) {
                             $("#output").html(response.result);

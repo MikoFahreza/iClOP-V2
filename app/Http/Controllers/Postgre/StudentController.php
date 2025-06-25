@@ -67,7 +67,8 @@ INSERT INTO transaksi (nama_pelanggan, selisih_pembayaran, total, tanggal_transa
 ('Andi Wijaya', -50000, 500000, '2025-06-01'),
 ('Budi Santoso', 0, 450000, '2025-06-02'),
 ('Citra Dewi', 20000, 520000, '2025-06-03'),
-('Dewi Ayu', -30000, 480000, '2025-06-04');
+('Dewi Ayu', -30000, 480000, '2025-06-04'),
+('Ayu Cantika', 0, 0, '2025-06-05'),;
 SQL;
             foreach (explode(';', $initSql) as $sql) {
                 if (trim($sql)) pg_query($dbConn, $sql);
@@ -89,13 +90,13 @@ SQL;
             ->join('postgre_exercise', 'postgre_exercise_question.exercise_id', 'postgre_exercise.id')
             ->where('postgre_exercise_question.exercise_id', '=', $exercise_id)
             ->where('postgre_exercise_question.no', '=', $request->question_no)
-            ->select('postgre_exercise_question.no', 'postgre_question.id', 'postgre_question.title', 'postgre_question.topic', 'postgre_question.dbname', 'postgre_question.description', 'postgre_question.required_table', 'postgre_question.test_code', 'postgre_exercise.guide', 'postgre_exercise.name', 'postgre_exercise_question.exercise_id')
+            ->select('postgre_exercise_question.no', 'postgre_question.id', 'postgre_question.title', 'postgre_question.topic', 'postgre_question.description', 'postgre_question.test_code', 'postgre_exercise.guide', 'postgre_exercise.name', 'postgre_exercise.duration', 'postgre_exercise_question.exercise_id')
             ->get();
         $daftar_soal = DB::table('postgre_exercise_question')
             ->join('postgre_question', 'postgre_exercise_question.question_id', 'postgre_question.id')
             ->join('postgre_exercise', 'postgre_exercise_question.exercise_id', 'postgre_exercise.id')
             ->where('postgre_exercise_question.exercise_id', '=', $exercise_id)
-            ->select('postgre_exercise_question.no', 'postgre_question.id', 'postgre_question.title', 'postgre_question.topic', 'postgre_question.dbname', 'postgre_question.description', 'postgre_question.required_table', 'postgre_question.test_code', 'postgre_exercise.guide', 'postgre_exercise.name', 'postgre_exercise_question.exercise_id')
+            ->select('postgre_exercise_question.no', 'postgre_question.id', 'postgre_question.title', 'postgre_question.topic', 'postgre_question.description', 'postgre_question.test_code', 'postgre_exercise.guide', 'postgre_exercise.name', 'postgre_exercise_question.exercise_id')
             ->get();
         $jumlah_soal = ExerciseQuestion::where('exercise_id', '=', $exercise_id)->get()->count();
 
@@ -127,6 +128,7 @@ SQL;
         $passed = DB::table('postgre_exercise_question')
             ->join('postgre_submissions', 'postgre_exercise_question.question_id', 'postgre_submissions.question_id')
             ->join('postgre_question', 'postgre_exercise_question.question_id', 'postgre_question.id')
+            ->where('postgre_submissions.status', 'Passed')
             ->where('postgre_exercise_question.exercise_id', $request->exercise_id)
             ->where('postgre_submissions.student_id', Auth::user()->id)->get()->count();
             

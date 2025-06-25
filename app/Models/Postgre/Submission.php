@@ -13,7 +13,9 @@ class Submission extends Model
         'student_id',
         'question_id',
         'status',
-        'solution'
+        'solution',
+        'feedback',
+        'time_left',
     ];
 
     public function soal()

@@ -1,5 +1,5 @@
-<div class="modal fade editQuestionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"
-    data-keyboard="false" data-backdrop="static" id="updateModal">
+<div class="modal fade editQuestionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true" data-keyboard="false" data-backdrop="static" id="updateModal">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -33,22 +33,23 @@
                                     <label for="topic">Topik</label>
                                     <div class="input-group">
                                         <select class="form-control" name="topic">
-                                        <option selected disabled>- Pilih Topik -</option>
-                                                <option value="ABS">ABS</option>
-                                                <option value="LENGTH">LENGTH</option>
-                                                <option value="CURRENT_DATE">CURRENT_DATE</option>
-                                                <option value="SUM">SUM</option>
-                                                <option value="AVG">AVG</option>
-                                                <option value="MAX">MAX</option>
-                                                <option value="MIN">MIN</option>
-                                                <option value="SCALAR FUNCTION">SCALAR FUNCTION</option>
-                                                <option value="SET RETURNING FUNCTION">SET RETURNING FUNCTION</option>
-                                                <option value="TABLE RETURNING FUNCTION">TABLE RETURNING FUNCTION</option>
-                                                <option value="CREATE STORED PROCEDURE">CREATE PROCEDURE</option>
-                                                <option value="ALTER STORED PROCEDURE">ALTER PROCEDURE</option>
-                                                <option value="CALL STORED PROCEDURE">CALL PROCEDURE</option>
-                                                <option value="DROP STORED PROCEDURE">DROP PROCEDURE</option>
-                                            </select>
+                                            <option selected disabled>- Pilih Topik -</option>
+                                            <option value="ABS">ABS</option>
+                                            <option value="LENGTH">LENGTH</option>
+                                            <option value="CURRENT_DATE">CURRENT_DATE</option>
+                                            <option value="SUM">SUM</option>
+                                            <option value="AVG">AVG</option>
+                                            <option value="MAX">MAX</option>
+                                            <option value="MIN">MIN</option>
+                                            <option value="SCALAR FUNCTION">SCALAR FUNCTION</option>
+                                            <option value="SET RETURNING FUNCTION">SET RETURNING FUNCTION</option>
+                                            <option value="TABLE RETURNING FUNCTION">TABLE RETURNING FUNCTION</option>
+                                            <option value="SELECT FUNCTION">SELECT FUNCTION</option>
+                                            <option value="CREATE PROCEDURE">CREATE PROCEDURE</option>
+                                            <option value="ALTER PROCEDURE">ALTER PROCEDURE</option>
+                                            <option value="CALL PROCEDURE">CALL PROCEDURE</option>
+                                            <option value="DROP PROCEDURE">DROP PROCEDURE</option>
+                                        </select>
                                         <div class="input-group-append">
                                             <div class="input-group-text">
                                                 <span class="fas fa-list"></span>
@@ -94,6 +95,23 @@
                                                 END;
                                                 $$;
                                                 SELECT * FROM runtests('public'::name);
+
+                                                JIKA JAWABAN YANG DIHARAPKAN BERUPA SELECT
+                                                    GUNAKAN TEMPLATE BERIKUT:
+                                                    CREATE EXTENSION IF NOT EXISTS pgtap;
+                                                    SELECT plan(1);
+                                                    CREATE OR REPLACE FUNCTION test_jawaban(mahasiswa_query TEXT)
+                                                    RETURNS SETOF TEXT LANGUAGE plpgsql AS $$
+                                                    BEGIN
+                                                    SET LOCAL pgtap.skip_plan = true;
+
+                                                    RETURN NEXT results_eq(
+                                                        mahasiswa_query,
+                                                        'SELECT ABS(selisih_pembayaran) AS selisih_abs FROM transaksi WHERE id = 3', 
+                                                        'Selisih pembayaran transaksi id 3 = 20000' 
+                                                    ); -- sesuaikan dengan jawaban yang diharapkan
+                                                    END;
+                                                    $$;
                                             </code>
                                         <p>Dokumentasi selengkapnya dapat dilihat <a
                                                 href="https://pgtap.org/documentation.html" target="_blank">disini</a>
