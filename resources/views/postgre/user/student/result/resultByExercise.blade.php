@@ -34,6 +34,7 @@
                                 <th>Tanggal Submit</th>
                                 <th>Tanggal Update</th>
                                 <th>Status</th>
+                                <th>Sisa Waktu</th>
                                 <th>Aksi</th>
                             </thead>
                             <tbody>
@@ -55,32 +56,14 @@
             info: true,
             serverSide: true,
             ajax: "{{ route('student.result.getByExerciseDataTable', ['exercise_id' => $exercise_id]) }}",
-            columns: [{
-                    data: "no",
-                    name: "no"
-                },
-                {
-                    data: "title",
-                    name: "title"
-                },
-                {
-                    data: "created_at",
-                    name: "created_at"
-                },
-                {
-                    data: "updated_at",
-                    name: "updated_at"
-                },
-                {
-                    data: "status",
-                    name: "status"
-                },
-                {
-                    data: "actions",
-                    name: "actions",
-                    searchable: false,
-                    orderable: false,
-                },
+            columns: [
+                { data: "no", name: "no" },
+                { data: "title", name: "title" },
+                { data: "created_at", name: "created_at" },
+                { data: "updated_at", name: "updated_at" },
+                { data: "status", name: "status" },
+                { data: "time_left", name: "time_left" },
+                { data: "actions", name: "actions", searchable: false, orderable: false },
             ]
         });
 
@@ -92,10 +75,21 @@
                 submission_id: submission_id
             }, function(data) {
                 const modal = $('.solutionModal');
-                // $(modal).find('h5').text(data.details[0].title);
-                // $(modal).find('h6').text(data.details[0].updated_at);
                 $(modal).find('h4').text(data.details[0].soal['title']);
                 $(modal).find('code').text(data.details[0].solution);
+                $(modal).modal('show');
+            }, "json");
+        });
+
+        $(document).on('click', '#feedback', function() {
+            const submission_id = $(this).data('id');
+            const url = '{{ route('student.result.getSubmissionDetail') }}';
+            $.get(url, {
+                submission_id: submission_id
+            }, function(data) {
+                const modal = $('.solutionModal');
+                $(modal).find('h4').text(data.details[0].soal['title']);
+                $(modal).find('code').text(data.details[0].feedback);
                 $(modal).modal('show');
             }, "json");
         });

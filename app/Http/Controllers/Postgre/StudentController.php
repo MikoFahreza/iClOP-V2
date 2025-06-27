@@ -68,7 +68,7 @@ INSERT INTO transaksi (nama_pelanggan, selisih_pembayaran, total, tanggal_transa
 ('Budi Santoso', 0, 450000, '2025-06-02'),
 ('Citra Dewi', 20000, 520000, '2025-06-03'),
 ('Dewi Ayu', -30000, 480000, '2025-06-04'),
-('Ayu Cantika', 0, 0, '2025-06-05'),;
+('Ayu Cantika', 0, 0, '2025-06-05');
 SQL;
             foreach (explode(';', $initSql) as $sql) {
                 if (trim($sql)) pg_query($dbConn, $sql);
@@ -144,12 +144,22 @@ SQL;
             ->join('postgre_question', 'postgre_exercise_question.question_id', 'postgre_question.id')
             ->where('postgre_exercise_question.exercise_id', $request->exercise_id)
             ->where('postgre_submissions.student_id', Auth::user()->id)
-            ->select('postgre_submissions.id', 'postgre_exercise_question.no', 'postgre_question.title', 'postgre_submissions.status', 'postgre_submissions.created_at', 'postgre_submissions.updated_at');
+            ->select(
+                'postgre_submissions.id',
+                'postgre_exercise_question.no',
+                'postgre_question.title',
+                'postgre_submissions.status',
+                'postgre_submissions.created_at',
+                'postgre_submissions.updated_at',
+                'postgre_submissions.time_left', 
+                'postgre_submissions.feedback'
+            );
 
         return DataTables::of($nilai)
             ->addColumn('actions', function ($row) {
-                return '<div class="btn-group" role="group">            
-                <button id="jawaban" type="button" class="btn btn-primary btn-block" data-id=' . $row->id . '></i>Jawaban</button>
+                return '<div class="btn-group" role="group">
+                    <button id="jawaban" type="button" class="btn btn-primary btn-block" data-id="' . $row->id . '">Jawaban</button>
+                    <button id="feedback" type="button" class="btn btn-info btn-block" data-id="' . $row->id . '">Feedback</button>
                 </div>';
             })
             ->rawColumns(['actions'])

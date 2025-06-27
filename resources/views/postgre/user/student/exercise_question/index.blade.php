@@ -2,9 +2,17 @@
     iCLOP | Daftar Soal
 @endsection
 @section('content-header')
-    <div class="d-flex justify-content-center align-items-center" style="height: 100%;">
-        <div class="content-header text-center">
-            <h2>{{ $soal[0]->name }}</h2>
+    <div class="container-fluid">
+        <div class="row align-items-center" style="min-height: 60px;">
+            <div class="col-4"></div>
+            <div class="col-4 text-center">
+                <h2 style="margin-bottom:0;">{{ $soal[0]->name }}</h2>
+            </div>
+            <div class="col-4 text-right">
+                <div id="exercise-timer" style="display:inline-block;background:#fff;padding:10px 20px;border-radius:8px;box-shadow:0 2px 8px #0001;font-weight:bold;font-size:18px;color:#d9534f;">
+                    Sisa Waktu: <span id="timer-text">--:--</span>
+                </div>
+            </div>
         </div>
     </div>
 @endsection
@@ -17,7 +25,9 @@
                 <div class="col-md-4">
                     @if(count($soal) > 0)
                         <embed src="{{ Storage::disk('public')->url('function_guidance/' . $soal[0]->guide) }}" type="application/pdf"
-                            style="width: 100%; height: 500px;">
+                        style="width: 100%; height: 500px;">
+                        <!-- <embed src="{{ Storage::disk('public')->get('function_guidance/' . $soal[0]->guide) }}" type="application/pdf"
+                            style="width: 100%; height: 500px;"> -->
                     @endif
                 </div>
                 <!-- Tengah: Editor dan Output -->
@@ -68,6 +78,7 @@
                 <!-- Kanan: Navbar Soal -->
                  
                 <div class="col-md-3">
+                    <!-- Timer dipindah ke atas daftar soal -->
                     <div class="d-flex flex-column" style="height: 100%;">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <h5>Daftar Soal</h5>
@@ -90,10 +101,6 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <div id="exercise-timer" style="position:fixed;top:30px;right:30px;z-index:9999;background:#fff;padding:10px 20px;border-radius:8px;box-shadow:0 2px 8px #0001;font-weight:bold;font-size:18px;color:#d9534f">
-        Sisa Waktu: <span id="timer-text">--:--</span>
     </div>
 
     <button id="finishTestBtn" class="btn btn-danger"

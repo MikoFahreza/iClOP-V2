@@ -72,7 +72,7 @@ class ValidatorXController extends Controller
             $output .= "<div class='alert alert-{$cls}'><i class='fas {$icon}'></i> {$line}</div>";
         }
         $output .= "</div>";
-        return ['output' => $output, 'allow' => $allow];
+        return ['output' => $output, 'allow' => $allow, 'raw_feedback' => $line];
     }
     public function displaySelectTestResult($test_result)
     {
@@ -88,7 +88,7 @@ class ValidatorXController extends Controller
             $output .= "<div class='alert alert-{$cls}'><i class='fas {$icon}'></i> {$line}</div>";
         }
         $output .= "</div>";
-        return ['output' => $output, 'allow' => $allow];
+        return ['output' => $output, 'allow' => $allow, 'raw_feedback' => $line];
     }
 
 
@@ -98,22 +98,20 @@ class ValidatorXController extends Controller
         $this->test_code = $test->test_code;
         $userId = $request->user_id;
         $dbname = "latihan_{$userId}_{$request->exercise_id}";
-        $topicsWithParametricTest = ['ABS', 'LENGTH', 'CURRENT_DATE', 'SUM', 'AVG', 'MAX', 'MIN'];
 
         try {
             $conn = $this->connectToDatabase($dbname);
             pg_query($conn, 'BEGIN;');
-            if (in_array(strtoupper($test->topic), $topicsWithParametricTest)) {
-                $run = $this->executeCode($conn, $request->code);
+            $run = $this->executeCode($conn, $request->code);
+            $runInfo = pg_fetch_all($run);
+            // if (in_array(strtoupper($test->topic), $topicsWithParametricTest)) {
+            if (strtolower(strtok(ltrim($request->code), " \t\n\r")) === 'select') {
                 $this->executeTest($conn, $this->test_code);
                 $result = $this->executeTest($conn, 'SELECT * FROM test_jawaban(\'' . pg_escape_string($request->code) . '\');');
                 $testInfo = $this->displaySelectTestResult($result);
-                $runInfo = pg_fetch_all($run);
             } else {
-                $run = $this->executeCode($conn, $request->code);
                 $result = $this->executeTest($conn, $this->test_code);
                 $testInfo = $this->displayTestResult($result);
-                $runInfo = pg_fetch_all($run);
             }
             $runOutput = '';
             if ($runInfo && count($runInfo) > 0) {
@@ -147,7 +145,7 @@ class ValidatorXController extends Controller
                     'status' => 'Failed',
                     'solution' => $request->code,
                     'time_left' => $request->time_left,
-                    'feedback' => $testInfo['output'],
+                    'feedback' => $testInfo['raw_feedback'],
                     'created_at' => now(),
                     'updated_at' => now()
                 ]);
@@ -163,8 +161,8 @@ class ValidatorXController extends Controller
                     'question_id' => $request->question_id,
                     'status' => 'Failed',
                     'solution' => $request->code,
-                    'time_left' => $request->time_left, // tambahkan ini
-                    'feedback' => isset($testInfo['output']) ? $testInfo['output'] : '', // tambahkan ini
+                    'time_left' => $request->time_left,
+                    'feedback' => isset($testInfo['raw_feedback']) ? $testInfo['raw_feedback'] : '', // tambahkan ini
                     'created_at' => now(),
                     'updated_at' => now()
                 ]);
@@ -178,22 +176,19 @@ class ValidatorXController extends Controller
         $this->test_code = $test->test_code;
         $userId = $request->user_id;
         $dbname = "latihan_{$userId}_{$request->exercise_id}";
-        $topicsWithParametricTest = ['ABS', 'LENGTH', 'CURRENT_DATE', 'SUM', 'AVG', 'MAX', 'MIN'];
 
         try {
             $conn = $this->connectToDatabase($dbname);
             pg_query($conn, 'BEGIN;');
-            if (in_array(strtoupper($test->topic), $topicsWithParametricTest)) {
-                $run = $this->executeCode($conn, $request->code);
+            $run = $this->executeCode($conn, $request->code);
+            $runInfo = pg_fetch_all($run);
+            if (strtolower(strtok(ltrim($request->code), " \t\n\r")) === 'select') {
                 $this->executeTest($conn, $this->test_code);
                 $result = $this->executeTest($conn, 'SELECT * FROM test_jawaban(\'' . pg_escape_string($request->code) . '\');');
                 $testInfo = $this->displaySelectTestResult($result);
-                $runInfo = pg_fetch_all($run);
             } else {
-                $run = $this->executeCode($conn, $request->code);
                 $result = $this->executeTest($conn, $this->test_code);
                 $testInfo = $this->displayTestResult($result);
-                $runInfo = pg_fetch_all($run);
             }
             $runOutput = '';
             if ($runInfo) {
@@ -229,7 +224,7 @@ class ValidatorXController extends Controller
                     'status' => $testInfo['allow'] ? 'Passed' : 'Failed',
                     'solution' => $request->code,
                     'time_left' => $request->time_left,
-                    'feedback' => $testInfo['output'],
+                    'feedback' => $testInfo['raw_feedback'],
                 ]
             );
 
