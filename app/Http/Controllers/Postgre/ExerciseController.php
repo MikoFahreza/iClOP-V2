@@ -31,7 +31,7 @@ class ExerciseController extends Controller
                     'name' => $request->name,
                     'description' => $request->description,
                     'guide' => $file_name,
-                    'duration' => $request->duration * 60, // simpan dalam detik
+                    'duration' => $request->duration * 60,
                 ]);
                 return response()->json(['code' => 1, 'msg' => 'BERHASIL menambahkan latihan baru.']);
             } else {

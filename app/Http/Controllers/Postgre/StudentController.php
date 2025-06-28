@@ -209,4 +209,18 @@ SQL;
 
         return response()->json(['message' => 'Tes selesai dan database berhasil dihapus!']);
     }
+
+    public function checkSubmissionStatus(Request $request)
+    {
+        $submission = DB::table('postgre_submissions')
+            ->where('student_id', $request->user_id)
+            ->where('question_id', $request->question_id)
+            ->first();
+
+        if ($submission && $submission->status === 'Passed') {
+            return response()->json(['status' => 'Passed']);
+        }
+
+        return response()->json(['status' => 'Not Passed']);
+    }
 }

@@ -112,6 +112,9 @@ Route::group(['prefix' => 's', 'midddleware' => ['auth', 'isStudent']], function
 
     // Route untuk menyelesaikan tes
     Route::post('finish-test', [StudentController::class, 'finishTest'])->name('student.finishTest');
+    
+    // Route untuk memeriksa status submission
+    Route::post('check-submission-status', [StudentController::class, 'checkSubmissionStatus'])->name('student.checkSubmissionStatus');
 });
 
 

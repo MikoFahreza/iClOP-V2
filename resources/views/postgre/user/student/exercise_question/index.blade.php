@@ -195,6 +195,27 @@
         $(document).ready(function() {
             updateTimerDisplay();
             startTimer();
+            
+            // Cek status submission saat halaman dibuka
+            $.ajax({
+                url: "{{ route('student.checkSubmissionStatus') }}",
+                method: "POST",
+                data: {
+                    question_id: "{{ $soal[0]->id }}",
+                    exercise_id: "{{ $exercise_id }}",
+                    user_id: "{{ Auth::user()->id }}",
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function(response) {
+                    if (response.status === 'Passed') {
+                        $("#submitButton").attr("disabled", true);
+                        $("#submitButton").html("<i class='fas fa-check'></i> Submitted");
+                    }
+                },
+                error: function() {
+                    console.log('Error checking submission status');
+                }
+            });
         });
         $(document).ready(function() {
                 $('#runButton').click(function() {
@@ -220,16 +241,48 @@
                                 $("#output").html(response.result);
                                 $("#runButton").attr("disabled", false)
                                 $("#runButton").html("<i class='fas fa-play'></i> Run");
-                                $("#submitButton").attr("disabled", false);
-                                $("#submitButton").html("<i class='fas fa-check'></i> Submit");
+                                
+                                // Cek status submission sebelum mengaktifkan tombol submit
+                                $.ajax({
+                                    url: "{{ route('student.checkSubmissionStatus') }}",
+                                    method: "POST",
+                                    data: {
+                                        question_id: "{{ $soal[0]->id }}",
+                                        exercise_id: "{{ $exercise_id }}",
+                                        user_id: "{{ Auth::user()->id }}",
+                                        _token: "{{ csrf_token() }}"
+                                    },
+                                    success: function(statusResponse) {
+                                        if (statusResponse.status !== 'Passed') {
+                                            $("#submitButton").attr("disabled", false);
+                                            $("#submitButton").html("<i class='fas fa-check'></i> Submit");
+                                        }
+                                    }
+                                });
 
                             },
                             error: function() {
                                 $(".output").html("Something went wrong!");
                                 $("#runButton").attr("disabled", false)
                                 $("#runButton").html("<i class='fas fa-play'></i> Run");
-                                $("#submitButton").attr("disabled", false);
-                                $("#submitButton").html("<i class='fas fa-check'></i> Submit");
+                                
+                                // Cek status submission sebelum mengaktifkan tombol submit
+                                $.ajax({
+                                    url: "{{ route('student.checkSubmissionStatus') }}",
+                                    method: "POST",
+                                    data: {
+                                        question_id: "{{ $soal[0]->id }}",
+                                        exercise_id: "{{ $exercise_id }}",
+                                        user_id: "{{ Auth::user()->id }}",
+                                        _token: "{{ csrf_token() }}"
+                                    },
+                                    success: function(statusResponse) {
+                                        if (statusResponse.status !== 'Passed') {
+                                            $("#submitButton").attr("disabled", false);
+                                            $("#submitButton").html("<i class='fas fa-check'></i> Submit");
+                                        }
+                                    }
+                                });
                             }
                         });
                     }
@@ -252,19 +305,21 @@
                         },
                         success: function(response) {
                             $("#output").html(response.result);
-                            $("#submitButton").attr("disabled", false)
+                            $("#submitButton").attr("disabled", false);
                             $("#submitButton").html("<i class='fas fa-check'></i> Submit");
                             $("#runButton").attr("disabled", false);
                             $("#runButton").html("<i class='fas fa-play'></i> Run");
+
                             if (response.status == 'passed') {
                                 toastr.success(response.message);
+                                $("#submitButton").attr("disabled", true); // Disable tombol submit jika jawaban benar
                             } else {
                                 toastr.warning(response.message);
                             }
                         },
                         error: function() {
                             $("#output").html("Something went wrong!");
-                            $("#submitButton").attr("disabled", false)
+                            $("#submitButton").attr("disabled", false);
                             $("#submitButton").html("<i class='fas fa-check'></i> Submit");
                             $("#runButton").attr("disabled", false);
                             $("#runButton").html("<i class='fas fa-play'></i> Run");

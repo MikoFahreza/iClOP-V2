@@ -39,7 +39,7 @@
                             </div>
                         </div>
                         <div class="form-row">
-                                        <div class="form-group col-sm-12">
+                            <div class="form-group col-sm-12">
                                             <label for="guidance">File Panduan
                                             </label>
                                             <div class="input-group">
@@ -54,6 +54,20 @@
                                             <span class="text-danger error-text guidance_error"></span>
                                         </div>
                                     </div>
+                        <div class="form-row">
+                        <div class="form-group col-sm-8">
+                            <label for="duration">Durasi (menit)</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" name="duration" min="1" placeholder="Durasi dalam menit" />
+                                <div class="input-group-append">
+                                    <div class="input-group-text">
+                                        <span class="fas fa-clock"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="text-danger error-text duration_error"></span>
+                        </div>
+                    </div>
                         <button type="submit" class="btn btn-block btn-info">Tambah</button>
                     </form>
                 </div>
