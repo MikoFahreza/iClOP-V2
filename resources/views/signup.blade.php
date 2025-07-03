@@ -98,8 +98,8 @@
             <select class="form-control" id="teacherName" name="role"  onchange="toggleInputField()">
                 <option value="" disabled selected>Choose a Role</option>
                 <option value="student">Student</option>
-                <!--<option value="admin">Admin</option>-->
-                <option value="teacher">Teacher</option>
+                <!-- <option value="admin">Admin</option>
+                <option value="teacher">Teacher</option> -->
             </select>
 
 

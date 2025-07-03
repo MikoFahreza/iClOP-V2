@@ -159,7 +159,7 @@
                         });
                     } else {
                         exercie_id = data.msg;
-                        alert(exercie_id);
+                        // alert(exercie_id);
                         var url =
                             "{{ route('teacher.exerciseQuestion.getDataTableByExercise', ['exercise_id' => 99]) }}"
                             .replace("99", data.msg);
@@ -248,7 +248,7 @@
 
         $(document).on("click", "#removeQuestionFromExerciseBtn", function() {
             const question_id = $(this).data('id');
-            alert(exercie_id);
+            // alert(exercie_id);
             const url = "{{ route('teacher.exerciseQuestion.removeExerciseQuestion') }}"
             if (confirm("Hapus Soal dari daftar Pertanyaan?")) {
                 $.post(url, {
