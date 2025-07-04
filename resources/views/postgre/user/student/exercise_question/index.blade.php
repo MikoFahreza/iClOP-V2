@@ -109,7 +109,7 @@
     <button id="finishTestBtn" class="btn btn-danger"
         style="position: fixed; bottom: 30px; right: 30px; z-index: 9999;"
         data-toggle="tooltip" title="Selesaikan Tes & Hapus Database">
-        <i class="fa fa-trash"></i> Selesaikan Tes
+        <i class="fa fa-flag-checkered"></i> Selesaikan Tes
     </button>
 
     <script src="{{ asset('postgre/editor/ide.js') }} "></script>
@@ -133,6 +133,9 @@
         
         // Fungsi untuk navigasi ke soal lain tanpa refresh
         function navigateToQuestion(questionNo) {
+            // Set flag untuk mencegah drop database saat navigasi internal
+            isNavigatingWithinExercise = true;
+            
             // Tampilkan loading
             $('#editor').html('<div class="text-center p-4"><i class="fas fa-spinner fa-spin"></i> Loading...</div>');
             $('#output').html('');
@@ -152,6 +155,9 @@
                     
                     // Update URL tanpa refresh
                     window.history.pushState({}, '', '/s/exercise-question/' + currentExerciseId + '/' + questionNo);
+                    
+                    // Reset flag setelah navigasi berhasil
+                    isNavigatingWithinExercise = false;
                 },
                 error: function() {
                     // Fallback ke refresh jika AJAX gagal
@@ -223,6 +229,7 @@
         
         // Fungsi untuk cek status submission
         function checkSubmissionStatus(questionId) {
+            // Hanya untuk display, tidak disable tombol submit
             $.ajax({
                 url: "{{ route('student.checkSubmissionStatus') }}",
                 method: "POST",
@@ -233,10 +240,7 @@
                     _token: "{{ csrf_token() }}"
                 },
                 success: function(response) {
-                    if (response.status === 'Passed') {
-                        $("#submitButton").attr("disabled", true);
-                        $("#submitButton").html("<i class='fas fa-check'></i> Submitted");
-                    }
+                    // Tidak ada action khusus, user bisa submit berkali-kali
                 }
             });
         }
@@ -260,6 +264,8 @@
         
         function finishTestAuto() {
             // Otomatis selesaikan latihan
+            isManualFinish = true; // Set flag untuk prevent beforeunload
+            
             $.ajax({
                 url: "{{ route('student.finishTest') }}",
                 method: "POST",
@@ -274,8 +280,77 @@
                 },
                 error: function() {
                     toastr.error('Gagal menyelesaikan tes!');
+                    isManualFinish = false; // Reset flag jika gagal
                 }
             });
+        }
+        
+        // Fungsi untuk drop database saat keluar halaman
+        function dropDatabaseOnExit() {
+            console.log('Attempting to drop database...');
+            
+            // Untuk back button, gunakan synchronous request yang lebih reliable
+            const isBackButton = window.performance && window.performance.navigation && 
+                                 window.performance.navigation.type === 2;
+            
+            if (isBackButton || !navigator.sendBeacon) {
+                console.log('Using synchronous AJAX (back button or no sendBeacon support)');
+                // Gunakan synchronous AJAX untuk back button
+                try {
+                    $.ajax({
+                        url: "{{ route('student.dropDatabase') }}",
+                        method: "POST",
+                        data: {
+                            exercise_id: "{{ $exercise_id }}",
+                            user_id: "{{ Auth::user()->id }}",
+                            _token: "{{ csrf_token() }}"
+                        },
+                        async: false, // Pastikan request selesai sebelum halaman tertutup
+                        success: function(response) {
+                            console.log('Database dropped successfully:', response);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error dropping database:', error);
+                        }
+                    });
+                } catch(e) {
+                    console.error('AJAX error:', e);
+                }
+            } else {
+                console.log('Using navigator.sendBeacon');
+                const data = new FormData();
+                data.append('exercise_id', '{{ $exercise_id }}');
+                data.append('user_id', '{{ Auth::user()->id }}');
+                data.append('_token', '{{ csrf_token() }}');
+                
+                const success = navigator.sendBeacon("{{ route('student.dropDatabase') }}", data);
+                console.log('SendBeacon result:', success);
+                
+                // Backup dengan synchronous AJAX jika sendBeacon gagal
+                if (!success) {
+                    console.log('SendBeacon failed, using synchronous AJAX as backup');
+                    try {
+                        $.ajax({
+                            url: "{{ route('student.dropDatabase') }}",
+                            method: "POST",
+                            data: {
+                                exercise_id: "{{ $exercise_id }}",
+                                user_id: "{{ Auth::user()->id }}",
+                                _token: "{{ csrf_token() }}"
+                            },
+                            async: false,
+                            success: function(response) {
+                                console.log('Database dropped successfully (backup):', response);
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error dropping database (backup):', error);
+                            }
+                        });
+                    } catch(e) {
+                        console.error('AJAX backup error:', e);
+                    }
+                }
+            }
         }
         
         function startTimer() {
@@ -306,9 +381,77 @@
             }
         });
         
+        // Deteksi jika user menutup tab/browser
+        let isPageHidden = false;
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                isPageHidden = true;
+                // Jika user menyembunyikan tab, tunggu sebentar untuk melihat apakah mereka kembali
+                setTimeout(() => {
+                    if (isPageHidden && !isManualFinish && !isNavigatingWithinExercise) {
+                        // User mungkin menutup tab, drop database
+                        dropDatabaseOnExit();
+                    }
+                }, 5000); // Tunggu 5 detik
+            } else {
+                isPageHidden = false;
+            }
+        });
+        
+        // Alert saat user ingin keluar dari halaman
+        window.onbeforeunload = function(e) {
+            if (!isManualFinish && !isNavigatingWithinExercise) {
+                // Drop database
+                dropDatabaseOnExit();
+                
+                // Browser akan menampilkan dialog default dengan pesan standar
+                // Kita tidak bisa mengubah teks dialog di browser modern
+                return 'Jika Anda keluar dari halaman, database akan dihapus dan jika ada soal bersambung maka jawaban sebelumnya perlu disubmit ulang, yakin ingin keluar?';
+            }
+        };
+        
+        // Tambahan: Handle saat user benar-benar keluar (backup)
+        window.addEventListener('unload', function() {
+            if (!isManualFinish && !isNavigatingWithinExercise) {
+                dropDatabaseOnExit();
+            }
+        });
+        
+        // Tambahan: pagehide event lebih reliable untuk mobile browsers
+        window.addEventListener('pagehide', function() {
+            if (!isManualFinish && !isNavigatingWithinExercise) {
+                dropDatabaseOnExit();
+            }
+        });
+        
+        // Flag untuk menandai bahwa user sedang finish test secara manual
+        var isManualFinish = false;
+        var isNavigatingWithinExercise = false;
+        
         // Reset timer jika latihan selesai manual
         $('#finishTestBtn').click(function() {
-            localStorage.removeItem(timerKey);
+            if(confirm('Yakin ingin menyelesaikan latihan? Database akan dihapus!')) {
+                isManualFinish = true; // Set flag untuk prevent beforeunload
+                localStorage.removeItem(timerKey);
+                
+                $.ajax({
+                    url: "{{ route('student.finishTest') }}",
+                    method: "POST",
+                    data: {
+                        exercise_id: "{{ $exercise_id }}",
+                        user_id: "{{ Auth::user()->id }}",
+                        _token: "{{ csrf_token() }}"
+                    },
+                    success: function(response) {
+                        toastr.success(response.message);
+                        setTimeout(() => window.location.href = "{{ route('student.exercise') }}", 2000);
+                    },
+                    error: function() {
+                        toastr.error('Gagal menyelesaikan tes!');
+                        isManualFinish = false; // Reset flag jika gagal
+                    }
+                });
+            }
         });
         
         // Inisialisasi timer saat halaman siap
@@ -321,6 +464,38 @@
             
             // Cek status submission saat halaman dibuka
             checkSubmissionStatus(window.currentQuestionId);
+            
+            // Prevent browser back button - push state to history
+            window.history.pushState(null, null, window.location.pathname);
+            
+            // Handle browser back button dengan lebih aggressive
+            window.addEventListener('popstate', function(event) {
+                console.log('Popstate event triggered');
+                if (!isManualFinish && !isNavigatingWithinExercise) {
+                    // Prevent the default navigation first
+                    event.preventDefault();
+                    
+                    // Show custom confirmation dialog
+                    const userConfirmed = confirm('Jika Anda keluar dari halaman, database akan dihapus dan jika ada soal bersambung maka jawaban sebelumnya perlu disubmit ulang, yakin ingin keluar?');
+                    
+                    if (userConfirmed) {
+                        // User confirmed, drop database and allow navigation
+                        isManualFinish = true; // Set flag to prevent further database drops
+                        dropDatabaseOnExit();
+                        
+                        // Navigate back after a short delay to ensure database drop completes
+                        setTimeout(() => {
+                            window.location.href = "{{ route('student.exercise') }}";
+                        }, 500);
+                    } else {
+                        // User cancelled, stay on page - push current state back
+                        window.history.pushState(null, null, window.location.pathname);
+                    }
+                } else {
+                    // Allow normal navigation if flags are set
+                    window.history.pushState(null, null, window.location.pathname);
+                }
+            });
         });
         $(document).ready(function() {
                 $('#runButton').click(function() {
@@ -347,47 +522,18 @@
                                 $("#runButton").attr("disabled", false)
                                 $("#runButton").html("<i class='fas fa-play'></i> Run");
                                 
-                                // Cek status submission sebelum mengaktifkan tombol submit
-                                $.ajax({
-                                    url: "{{ route('student.checkSubmissionStatus') }}",
-                                    method: "POST",
-                                    data: {
-                                        question_id: "{{ $soal[0]->id }}",
-                                        exercise_id: "{{ $exercise_id }}",
-                                        user_id: "{{ Auth::user()->id }}",
-                                        _token: "{{ csrf_token() }}"
-                                    },
-                                    success: function(statusResponse) {
-                                        if (statusResponse.status !== 'Passed') {
-                                            $("#submitButton").attr("disabled", false);
-                                            $("#submitButton").html("<i class='fas fa-check'></i> Submit");
-                                        }
-                                    }
-                                });
-
+                                // Re-enable submit button
+                                $("#submitButton").attr("disabled", false);
+                                $("#submitButton").html("<i class='fas fa-check'></i> Submit");
                             },
                             error: function() {
                                 $(".output").html("Something went wrong!");
                                 $("#runButton").attr("disabled", false)
                                 $("#runButton").html("<i class='fas fa-play'></i> Run");
                                 
-                                // Cek status submission sebelum mengaktifkan tombol submit
-                                $.ajax({
-                                    url: "{{ route('student.checkSubmissionStatus') }}",
-                                    method: "POST",
-                                    data: {
-                                        question_id: "{{ $soal[0]->id }}",
-                                        exercise_id: "{{ $exercise_id }}",
-                                        user_id: "{{ Auth::user()->id }}",
-                                        _token: "{{ csrf_token() }}"
-                                    },
-                                    success: function(statusResponse) {
-                                        if (statusResponse.status !== 'Passed') {
-                                            $("#submitButton").attr("disabled", false);
-                                            $("#submitButton").html("<i class='fas fa-check'></i> Submit");
-                                        }
-                                    }
-                                });
+                                // Re-enable submit button
+                                $("#submitButton").attr("disabled", false);
+                                $("#submitButton").html("<i class='fas fa-check'></i> Submit");
                             }
                         });
                     }
@@ -417,7 +563,7 @@
 
                             if (response.status == 'passed') {
                                 toastr.success(response.message);
-                                $("#submitButton").attr("disabled", true); // Disable tombol submit jika jawaban benar
+                                // Hapus disable submit button, user bisa submit berkali-kali
                             } else {
                                 toastr.warning(response.message);
                             }
@@ -437,26 +583,6 @@
                     output.remove();
                 });
 
-            });
-            $('#finishTestBtn').click(function() {
-                if(confirm('Yakin ingin menyelesaikan latihan? Semua jawaban yang belum disubmit akan dianggap salah dan database akan dihapus!')) {
-                    $.ajax({
-                        url: "{{ route('student.finishTest') }}",
-                        method: "POST",
-                        data: {
-                            exercise_id: "{{ $exercise_id }}",
-                            user_id: "{{ Auth::user()->id }}",
-                            _token: "{{ csrf_token() }}"
-                        },
-                        success: function(response) {
-                            toastr.success(response.message);
-                            setTimeout(() => window.location.href = "{{ route('student.exercise') }}", 2000);
-                        },
-                        error: function() {
-                            toastr.error('Gagal menyelesaikan tes!');
-                        }
-                    });
-                }
             });
         $('#tabel_soal').DataTable({
             processing: true,

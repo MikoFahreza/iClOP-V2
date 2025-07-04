@@ -8,6 +8,7 @@ use App\Models\Postgre\Submission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -181,34 +182,42 @@ SQL;
         $exerciseId = $request->exercise_id;
         $dbName = "latihan_{$userId}_{$exerciseId}";
 
-        // Submit otomatis semua soal yang belum disubmit
-        $soalIds = DB::table('postgre_exercise_question')
-            ->where('exercise_id', $exerciseId)
-            ->pluck('question_id');
-        foreach ($soalIds as $qid) {
-            $exist = DB::table('postgre_submissions')
-                ->where('student_id', $userId)
-                ->where('question_id', $qid)
-                ->exists();
-            if (!$exist) {
-                DB::table('postgre_submissions')->insert([
-                    'student_id' => $userId,
-                    'question_id' => $qid,
-                    'status' => 'Failed',
-                    'solution' => '',
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ]);
-            }
-        }
-
-        // Drop database
+        // Hanya drop database tanpa submit jawaban yang salah
         $conn = pg_connect("host=localhost port=5432 dbname=postgres user=postgres password=postgres");
         pg_query($conn, "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '{$dbName}'");
         pg_query($conn, "DROP DATABASE IF EXISTS \"{$dbName}\"");
         pg_close($conn);
 
         return response()->json(['message' => 'Tes selesai dan database berhasil dihapus!']);
+    }
+
+    public function dropDatabase(Request $request)
+    {
+        $userId = $request->user_id;
+        $exerciseId = $request->exercise_id;
+        $dbName = "latihan_{$userId}_{$exerciseId}";
+
+        // Log untuk debugging
+        Log::info("Attempting to drop database: {$dbName}");
+
+        // Drop database
+        try {
+            $conn = pg_connect("host=localhost port=5432 dbname=postgres user=postgres password=postgres");
+            if ($conn) {
+                pg_query($conn, "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '{$dbName}'");
+                $result = pg_query($conn, "DROP DATABASE IF EXISTS \"{$dbName}\"");
+                pg_close($conn);
+                
+                Log::info("Database {$dbName} dropped successfully");
+                return response()->json(['message' => 'Database berhasil dihapus!', 'status' => 'success']);
+            } else {
+                Log::error("Failed to connect to PostgreSQL");
+                return response()->json(['message' => 'Gagal koneksi ke database!', 'status' => 'error'], 500);
+            }
+        } catch (\Exception $e) {
+            Log::error("Error dropping database {$dbName}: " . $e->getMessage());
+            return response()->json(['message' => 'Error: ' . $e->getMessage(), 'status' => 'error'], 500);
+        }
     }
 
     public function checkSubmissionStatus(Request $request)
