@@ -24,10 +24,12 @@
                 <!-- Kiri: Preview Guidance -->
                 <div class="col-md-4">
                     @if(count($soal) > 0)
-                        <embed src="{{ Storage::disk('public')->url('function_guidance/' . $soal[0]->guide) }}" type="application/pdf"
-                        style="width: 100%; height: 500px;">
-                        <!-- <embed src="{{ Storage::disk('public')->get('function_guidance/' . $soal[0]->guide) }}" type="application/pdf"
-                            style="width: 100%; height: 500px;"> -->
+                        <iframe src="{{ Storage::disk('public')->url('function_guidance/' . $soal[0]->guide) }}" 
+                                style="width: 100%; height: 500px; border: none; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        </iframe>
+                        <!-- Fallback untuk browser yang tidak support iframe -->
+                        <!-- <embed src="{{ Storage::disk('public')->url('function_guidance/' . $soal[0]->guide) }}" type="application/pdf"
+                        style="width: 100%; height: 500px;"> -->
                     @endif
                 </div>
                 <!-- Tengah: Editor dan Output -->
@@ -41,7 +43,7 @@
                             @else
                                 <button id="prevBtn" class="btn btn-primary w-100" data-toggle="tooltip"
                                     data-placement="bottom" title="Sebelumnya"
-                                    onclick="window.location.href='/s/exercise-question/{{ $soal[0]->exercise_id }}/{{ $soal[0]->no - 1 }}'"><i
+                                    onclick="navigateToQuestion({{ $soal[0]->no - 1 }})"><i
                                         class="fa fa-angle-left"></i></button>
                             @endif
                         </div>
@@ -53,7 +55,7 @@
                             @else
                                 <button class="btn btn-primary w-100" data-toggle="tooltip" data-placement="bottom"
                                     title="Selanjutnya"
-                                    onclick="window.location.href='/s/exercise-question/{{ $soal[0]->exercise_id }}/{{ $soal[0]->no + 1 }}'">
+                                    onclick="navigateToQuestion({{ $soal[0]->no + 1 }})">
                                     <i class="fa fa-angle-right"></i></button>
                             @endif
                         </div>
@@ -87,7 +89,8 @@
                             @foreach($daftar_soal as $s)
                                 <a 
                                     class="nav-link {{ $s->id == $soal[0]->id ? 'active' : '' }}" 
-                                    href="/s/exercise-question/{{ $s->exercise_id }}/{{ $s->no }}">
+                                    href="javascript:void(0)"
+                                    onclick="navigateToQuestion({{ $s->no }})">
                                     <div>
                                         <strong>{{ $s->no }}.</strong> {{ $s->topic }}
                                     </div>
@@ -126,6 +129,123 @@
         var timerKey = 'icloptimer_{{ $exercise_id }}_{{ Auth::user()->id }}';
         var timerInterval = null;
         var remaining = timerDuration;
+        var currentExerciseId = {{ $exercise_id }};
+        
+        // Fungsi untuk navigasi ke soal lain tanpa refresh
+        function navigateToQuestion(questionNo) {
+            // Tampilkan loading
+            $('#editor').html('<div class="text-center p-4"><i class="fas fa-spinner fa-spin"></i> Loading...</div>');
+            $('#output').html('');
+            $('#run-output').html('');
+            
+            // AJAX request untuk mendapatkan data soal baru
+            $.ajax({
+                url: '/s/exercise-question/' + currentExerciseId + '/' + questionNo,
+                method: 'GET',
+                dataType: 'json',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                success: function(response) {
+                    // Update konten tanpa refresh file guidance
+                    updateQuestionContent(response);
+                    
+                    // Update URL tanpa refresh
+                    window.history.pushState({}, '', '/s/exercise-question/' + currentExerciseId + '/' + questionNo);
+                },
+                error: function() {
+                    // Fallback ke refresh jika AJAX gagal
+                    window.location.href = '/s/exercise-question/' + currentExerciseId + '/' + questionNo;
+                }
+            });
+        }
+        
+        // Fungsi untuk update konten soal
+        function updateQuestionContent(data) {
+            // Update title
+            $('h2').text(data.soal.name);
+            
+            // Update editor (reset kode)
+            if (typeof editor !== 'undefined') {
+                editor.setValue('');
+            }
+            
+            // Update navigation buttons
+            updateNavigationButtons(data.soal.no, data.jumlah_soal);
+            
+            // Update active state di sidebar
+            updateSidebarActive(data.soal.id);
+            
+            // Update form data untuk AJAX requests
+            updateFormData(data.soal.id);
+            
+            // Reset button states
+            resetButtonStates();
+            
+            // Cek status submission untuk soal baru
+            checkSubmissionStatus(data.soal.id);
+        }
+        
+        // Fungsi untuk update navigation buttons
+        function updateNavigationButtons(currentNo, totalQuestions) {
+            // Previous button
+            if (currentNo <= 1) {
+                $('#prevBtn').prop('disabled', true).attr('onclick', '');
+            } else {
+                $('#prevBtn').prop('disabled', false).attr('onclick', 'navigateToQuestion(' + (currentNo - 1) + ')');
+            }
+            
+            // Next button
+            if (currentNo >= totalQuestions) {
+                $('#nextBtn').prop('disabled', true).attr('onclick', '');
+            } else {
+                $('#nextBtn').prop('disabled', false).attr('onclick', 'navigateToQuestion(' + (currentNo + 1) + ')');
+            }
+        }
+        
+        // Fungsi untuk update active state di sidebar
+        function updateSidebarActive(questionId) {
+            $('.nav-link').removeClass('active');
+            $('.nav-link').each(function() {
+                var onclick = $(this).attr('onclick');
+                if (onclick && onclick.includes('navigateToQuestion')) {
+                    // Untuk sementara, aktifkan berdasarkan urutan
+                    // Nanti bisa disesuaikan dengan ID yang sebenarnya
+                }
+            });
+        }
+        
+        // Fungsi untuk reset button states
+        function resetButtonStates() {
+            $("#runButton").attr("disabled", false).html("<i class='fas fa-play'></i> Run");
+            $("#submitButton").attr("disabled", false).html("<i class='fas fa-check'></i> Submit");
+        }
+        
+        // Fungsi untuk cek status submission
+        function checkSubmissionStatus(questionId) {
+            $.ajax({
+                url: "{{ route('student.checkSubmissionStatus') }}",
+                method: "POST",
+                data: {
+                    question_id: questionId,
+                    exercise_id: currentExerciseId,
+                    user_id: "{{ Auth::user()->id }}",
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function(response) {
+                    if (response.status === 'Passed') {
+                        $("#submitButton").attr("disabled", true);
+                        $("#submitButton").html("<i class='fas fa-check'></i> Submitted");
+                    }
+                }
+            });
+        }
+        
+        // Fungsi untuk update form data
+        function updateFormData(questionId) {
+            // Update question_id dan task_id di semua AJAX request
+            window.currentQuestionId = questionId;
+        }
         
         // Load timer from localStorage if exists
         if(localStorage.getItem(timerKey)) {
@@ -196,26 +316,11 @@
             updateTimerDisplay();
             startTimer();
             
+            // Set initial question ID
+            window.currentQuestionId = "{{ $soal[0]->id }}";
+            
             // Cek status submission saat halaman dibuka
-            $.ajax({
-                url: "{{ route('student.checkSubmissionStatus') }}",
-                method: "POST",
-                data: {
-                    question_id: "{{ $soal[0]->id }}",
-                    exercise_id: "{{ $exercise_id }}",
-                    user_id: "{{ Auth::user()->id }}",
-                    _token: "{{ csrf_token() }}"
-                },
-                success: function(response) {
-                    if (response.status === 'Passed') {
-                        $("#submitButton").attr("disabled", true);
-                        $("#submitButton").html("<i class='fas fa-check'></i> Submitted");
-                    }
-                },
-                error: function() {
-                    console.log('Error checking submission status');
-                }
-            });
+            checkSubmissionStatus(window.currentQuestionId);
         });
         $(document).ready(function() {
                 $('#runButton').click(function() {
@@ -231,7 +336,7 @@
                             method: "POST",
                             data: {
                                 code: editor.getSession().getValue(),
-                                question_id: "{{ $soal[0]->id }}",
+                                question_id: window.currentQuestionId || "{{ $soal[0]->id }}",
                                 user_id: "{{ Auth::user()->id }}",
                                 exercise_id: "{{ $exercise_id }}",
                                 time_left: remaining // <-- tambahkan ini
@@ -298,7 +403,7 @@
                         method: "POST",
                         data: {
                             code: editor.getSession().getValue(),
-                            task_id: "{{ $soal[0]->id }}",
+                            task_id: window.currentQuestionId || "{{ $soal[0]->id }}",
                             user_id: "{{ Auth::user()->id }}",
                             exercise_id: "{{ $exercise_id }}",
                             time_left: remaining // <-- tambahkan ini
