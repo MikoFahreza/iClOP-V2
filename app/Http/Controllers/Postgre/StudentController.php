@@ -35,18 +35,6 @@ class StudentController extends Controller
             // Isi tabel dan data
             $dbConn = pg_connect("host=localhost port=5432 dbname={$dbName} user=postgres password=postgres");
             $initSql = <<<SQL
-CREATE TABLE pelanggan (
-    id SERIAL PRIMARY KEY,
-    nama VARCHAR(100) NOT NULL,
-    email VARCHAR(100),
-    alamat TEXT
-);
-CREATE TABLE penjualan (
-    id SERIAL PRIMARY KEY,
-    id_pelanggan INT REFERENCES pelanggan(id),
-    tanggal DATE NOT NULL,
-    total INT
-);
 CREATE TABLE transaksi (
     id SERIAL PRIMARY KEY,
     nama_pelanggan VARCHAR(100),
@@ -54,16 +42,6 @@ CREATE TABLE transaksi (
     total INT,
     tanggal_transaksi DATE
 );
-INSERT INTO pelanggan (nama, email, alamat) VALUES
-('Andi Wijaya', 'andi@gmail.com', 'Jl. Melati 1'),
-('Budi Santoso', 'budi@gmail.com', 'Jl. Mawar 2'),
-('Citra Dewi', 'citra@gmail.com', 'Jl. Kenanga 3'),
-('Dewi Ayu', 'dewi@gmail.com', 'Jl. Dahlia 4');
-INSERT INTO penjualan (id_pelanggan, tanggal, total) VALUES
-(1, '2025-06-01', 500000),
-(2, '2025-06-02', 450000),
-(3, '2025-06-03', 520000),
-(4, '2025-06-04', 480000);
 INSERT INTO transaksi (nama_pelanggan, selisih_pembayaran, total, tanggal_transaksi) VALUES
 ('Andi Wijaya', -50000, 500000, '2025-06-01'),
 ('Budi Santoso', 0, 450000, '2025-06-02'),
