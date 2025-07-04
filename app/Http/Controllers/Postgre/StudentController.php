@@ -97,6 +97,7 @@ SQL;
             ->join('postgre_exercise', 'postgre_exercise_question.exercise_id', 'postgre_exercise.id')
             ->where('postgre_exercise_question.exercise_id', '=', $exercise_id)
             ->select('postgre_exercise_question.no', 'postgre_question.id', 'postgre_question.title', 'postgre_question.topic', 'postgre_question.description', 'postgre_question.test_code', 'postgre_exercise.guide', 'postgre_exercise.name', 'postgre_exercise_question.exercise_id')
+            ->orderBy('postgre_exercise_question.no')
             ->get();
         $jumlah_soal = ExerciseQuestion::where('exercise_id', '=', $exercise_id)->get()->count();
 
