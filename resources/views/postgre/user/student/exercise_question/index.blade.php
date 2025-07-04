@@ -24,7 +24,10 @@
                 <!-- Kiri: Preview Guidance -->
                 <div class="col-md-4">
                     @if(count($soal) > 0)
-                        <iframe src="{{ Storage::disk('public')->url('function_guidance/' . $soal[0]->guide) }}" 
+                        <!-- Guidance ini akan tetap sama untuk semua soal dalam satu exercise -->
+                        <!-- Tidak akan di-reload saat navigasi antar soal -->
+                        <iframe id="guidance-iframe" 
+                                src="{{ Storage::disk('public')->url('function_guidance/' . $soal[0]->guide) }}" 
                                 style="width: 100%; height: 500px; border: none; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                         </iframe>
                         <!-- Fallback untuk browser yang tidak support iframe -->
@@ -35,7 +38,7 @@
                 <!-- Tengah: Editor dan Output -->
                 <div class="col-md-5 d-flex flex-column">
                     <div class="editor" id="editor" style="height: 200px;"></div>
-                    <div class="row mt-3">
+                    <!-- <div class="row mt-3">
                         <div class="col-6">
                             @if ($soal[0]->no <= 1)
                                 <button class="btn btn-primary w-100" data-toggle="tooltip" data-placement="bottom"
@@ -59,7 +62,7 @@
                                     <i class="fa fa-angle-right"></i></button>
                             @endif
                         </div>
-                    </div>
+                    </div> -->
                     <div class="row mt-3">
                         <div class="col-6">
                             <button id="runButton" class="btn btn-success w-100" data-toggle="tooltip"
@@ -133,12 +136,14 @@
         
         // Fungsi untuk navigasi ke soal lain tanpa refresh
         function navigateToQuestion(questionNo) {
+            console.log('Navigating to question:', questionNo);
+            console.log('Editor status:', typeof editor, editor ? 'initialized' : 'not initialized');
+            
             // Set flag untuk mencegah drop database saat navigasi internal
             isNavigatingWithinExercise = true;
             
-            // Tampilkan loading
-            $('#editor').html('<div class="text-center p-4"><i class="fas fa-spinner fa-spin"></i> Loading...</div>');
-            $('#output').html('');
+            // Tampilkan loading di output saja, jangan di editor
+            $('#output').html('<div class="text-center p-4"><i class="fas fa-spinner fa-spin"></i> Loading...</div>');
             $('#run-output').html('');
             
             // AJAX request untuk mendapatkan data soal baru
@@ -150,31 +155,96 @@
                     'X-Requested-With': 'XMLHttpRequest'
                 },
                 success: function(response) {
-                    // Update konten tanpa refresh file guidance
-                    updateQuestionContent(response);
+                    // Debug: log response untuk memastikan data benar
+                    console.log('AJAX Response:', response);
                     
-                    // Update URL tanpa refresh
-                    window.history.pushState({}, '', '/s/exercise-question/' + currentExerciseId + '/' + questionNo);
-                    
-                    // Reset flag setelah navigasi berhasil
-                    isNavigatingWithinExercise = false;
+                    // Pastikan response memiliki data yang diperlukan
+                    if (response && response.soal) {
+                        // Update konten tanpa refresh file guidance
+                        updateQuestionContent(response);
+                        
+                        // Update URL tanpa refresh
+                        window.history.pushState({}, '', '/s/exercise-question/' + currentExerciseId + '/' + questionNo);
+                        
+                        // Reset flag setelah navigasi berhasil
+                        isNavigatingWithinExercise = false;
+                    } else {
+                        console.error('Invalid response format:', response);
+                        // Fallback ke refresh jika data tidak valid
+                        window.location.href = '/s/exercise-question/' + currentExerciseId + '/' + questionNo;
+                    }
                 },
-                error: function() {
+                error: function(xhr, status, error) {
+                    // Jika AJAX gagal, clear loading dan restore editor
+                    $('#output').html('<div class="alert alert-danger">Error loading question: ' + error + '</div>');
+                    
+                    // Pastikan editor kembali normal
+                    if (typeof editor !== 'undefined') {
+                        $('#editor').show();
+                    }
+                    
+                    // Reset flag
+                    isNavigatingWithinExercise = false;
+                    
                     // Fallback ke refresh jika AJAX gagal
-                    window.location.href = '/s/exercise-question/' + currentExerciseId + '/' + questionNo;
+                    console.log('AJAX failed, falling back to page refresh');
+                    setTimeout(function() {
+                        window.location.href = '/s/exercise-question/' + currentExerciseId + '/' + questionNo;
+                    }, 1000);
                 }
             });
         }
         
         // Fungsi untuk update konten soal
         function updateQuestionContent(data) {
+            // Simpan response terakhir untuk digunakan di fungsi lain
+            window.lastResponse = data;
+            
             // Update title
             $('h2').text(data.soal.name);
             
-            // Update editor (reset kode)
-            if (typeof editor !== 'undefined') {
+            // Pastikan editor sudah ter-inisialisasi dan clear loading
+            if (typeof editor !== 'undefined' && editor !== null) {
+                // Reset kode editor
                 editor.setValue('');
+                editor.clearSelection();
+                // Pastikan editor terlihat dan tidak ada loading
+                $('#editor').show();
+                console.log('Editor sudah tersedia, direset untuk soal baru');
+            } else {
+                // Jika editor belum ada, inisialisasi ulang
+                console.log('Editor tidak ditemukan, mencoba inisialisasi ulang...');
+                // Pastikan div editor ada
+                if ($('#editor').length > 0) {
+                    // Tunggu sebentar lalu coba inisialisasi
+                    setTimeout(function() {
+                        if (typeof ace !== 'undefined') {
+                            try {
+                                editor = ace.edit("editor");
+                                editor.setTheme("ace/theme/monokai");
+                                editor.session.setMode("ace/mode/pgsql");
+                                editor.setOptions({
+                                    enableBasicAutocompletion: true,
+                                    enableSnippets: true,
+                                    enableLiveAutocompletion: true,
+                                    fontSize: "12pt"
+                                });
+                                console.log('Editor berhasil diinisialisasi ulang');
+                            } catch(e) {
+                                console.error('Error inisialisasi editor:', e);
+                            }
+                        } else {
+                            console.error('Ace editor library tidak tersedia');
+                        }
+                    }, 100);
+                } else {
+                    console.error('Div editor tidak ditemukan');
+                }
             }
+            
+            // Clear loading dari output
+            $('#output').html('');
+            $('#run-output').html('');
             
             // Update navigation buttons
             updateNavigationButtons(data.soal.no, data.jumlah_soal);
@@ -190,6 +260,10 @@
             
             // Cek status submission untuk soal baru
             checkSubmissionStatus(data.soal.id);
+            
+            // TIDAK UPDATE IFRAME GUIDANCE - biarkan tetap sama
+            // Iframe guidance akan tetap menampilkan file yang sama untuk semua soal dalam satu exercise
+            console.log('Guidance iframe tidak di-reload - tetap menampilkan file yang sama untuk semua soal dalam exercise ini');
         }
         
         // Fungsi untuk update navigation buttons
@@ -211,14 +285,28 @@
         
         // Fungsi untuk update active state di sidebar
         function updateSidebarActive(questionId) {
+            // Remove active class from all nav links
             $('.nav-link').removeClass('active');
-            $('.nav-link').each(function() {
-                var onclick = $(this).attr('onclick');
-                if (onclick && onclick.includes('navigateToQuestion')) {
-                    // Untuk sementara, aktifkan berdasarkan urutan
-                    // Nanti bisa disesuaikan dengan ID yang sebenarnya
-                }
-            });
+            
+            // Find the nav link that corresponds to the current question
+            // We'll use a simple approach - find by the question number in the response
+            var currentQuestionNo = null;
+            if (window.lastResponse && window.lastResponse.soal) {
+                currentQuestionNo = window.lastResponse.soal.no;
+            }
+            
+            if (currentQuestionNo) {
+                $('.nav-link').each(function() {
+                    var onclick = $(this).attr('onclick');
+                    if (onclick) {
+                        var match = onclick.match(/navigateToQuestion\((\d+)\)/);
+                        if (match && parseInt(match[1]) === currentQuestionNo) {
+                            $(this).addClass('active');
+                            return false; // Break the loop
+                        }
+                    }
+                });
+            }
         }
         
         // Fungsi untuk reset button states
@@ -456,6 +544,33 @@
         
         // Inisialisasi timer saat halaman siap
         $(document).ready(function() {
+            console.log('Document ready - checking editor status...');
+            
+            // Cek apakah editor sudah diinisialisasi
+            setTimeout(function() {
+                if (typeof editor !== 'undefined' && editor !== null) {
+                    console.log('Editor sudah diinisialisasi dengan benar');
+                } else {
+                    console.log('Editor belum diinisialisasi, mencoba inisialisasi manual...');
+                    if (typeof ace !== 'undefined') {
+                        try {
+                            editor = ace.edit("editor");
+                            editor.setTheme("ace/theme/monokai");
+                            editor.session.setMode("ace/mode/pgsql");
+                            editor.setOptions({
+                                enableBasicAutocompletion: true,
+                                enableSnippets: true,
+                                enableLiveAutocompletion: true,
+                                fontSize: "12pt"
+                            });
+                            console.log('Editor berhasil diinisialisasi secara manual');
+                        } catch(e) {
+                            console.error('Error inisialisasi editor manual:', e);
+                        }
+                    }
+                }
+            }, 1000); // Tunggu 1 detik untuk memastikan ace sudah dimuat
+            
             updateTimerDisplay();
             startTimer();
             

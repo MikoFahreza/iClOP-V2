@@ -112,6 +112,16 @@ SQL;
                 ->first();
         }
 
+        // Cek apakah request adalah AJAX
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'soal' => $soal[0] ?? null,
+                'jumlah_soal' => $jumlah_soal,
+                'daftar_soal' => $daftar_soal,
+                'submission' => $submission
+            ]);
+        }
+
         return view(
             'postgre.user.student.exercise_question.index',
             compact('exercise_id', 'soal', 'jumlah_soal', 'daftar_soal', 'dbName', 'submission')
