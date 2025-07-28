@@ -18,4 +18,14 @@ class Question extends Model
         'test_code',
         'guide'
     ];
+
+    public function exerciseQuestions()
+    {
+        return $this->hasMany(ExerciseQuestion::class, 'question_id');
+    }
+
+    public function submissions()
+    {
+        return $this->hasMany(Submission::class, 'question_id');
+    }
 }

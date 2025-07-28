@@ -14,4 +14,9 @@ class Exercise extends Model
         'guide',
         'duration', // durasi dalam detik
     ];
+
+    public function exerciseQuestions()
+    {
+        return $this->hasMany(ExerciseQuestion::class, 'exercise_id');
+    }
 }

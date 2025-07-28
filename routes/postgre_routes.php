@@ -64,11 +64,13 @@ Route::group(['prefix' => 't', 'midddleware' => ['auth', 'isTeacher']], function
     Route::post('question/add', [QuestionController::class, 'addQuestion'])->name('teacher.question.add');
     Route::get('question/detail', [QuestionController::class, 'getQuestionDetail'])->name('teacher.question.detail');
     Route::post('question/update', [QuestionController::class, 'updateQuestion'])->name('teacher.question.update');
+    Route::post('question/delete', [QuestionController::class, 'deleteQuestion'])->name('teacher.question.delete');
 
     Route::get('exercise', [TeacherController::class, 'exercise'])->name('teacher.exercise');
     Route::post('exercise/add', [ExerciseController::class, 'addExercise'])->name('teacher.exercise.add');
     Route::get('exercise/detail', [ExerciseController::class, 'getExerciseDetail'])->name('teacher.exercise.detail');
     Route::post('exercise/update', [ExerciseController::class, 'updateExercise'])->name('teacher.exercise.update');
+    Route::post('exercise/delete', [ExerciseController::class, 'deleteExercise'])->name('teacher.exercise.delete');
 
     Route::get('exercise-question/{exercise_id}', [TeacherController::class, 'exerciseQuestion'])->name('teacher.exerciseQuestion');
     Route::get('exercise-question/get/all', [ExerciseQuestionController::class, 'getExerciseQuestionDataTable'])->name('teacher.exerciseQuestion.getDataTable');

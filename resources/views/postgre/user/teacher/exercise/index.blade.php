@@ -97,6 +97,8 @@
                                             data-id={{ $item->{'id'} }}><b>Detail</b></button>
                                         <a href="{{ route('teacher.exerciseQuestion', ['exercise_id' => $item->{'id'}]) }}" class="btn btn-success btn-block"
                                             id="classStudentBtn" data-id={{ $item->{'id'} }}><b>Soal</b></a>
+                                        <button class="btn btn-danger btn-block" id="exerciseDeleteBtn"
+                                            data-id={{ $item->{'id'} }}><b>Hapus</b></button>
                                     </div>
                                 </div>
                             </div>
@@ -200,6 +202,34 @@
                     }
                 },
             });
+        });
+
+        $(document).on("click", "#exerciseDeleteBtn", function() {
+            const exercise_id = $(this).data("id");
+            const url = "{{ route('teacher.exercise.delete') }}";
+            
+            if (confirm("Apakah Anda yakin ingin menghapus exercise ini? Semua data terkait akan ikut terhapus.")) {
+                $.ajax({
+                    url: url,
+                    method: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        exercise_id: exercise_id
+                    },
+                    dataType: "json",
+                    success: function(data) {
+                        if (data.code == 1) {
+                            toastr.success(data.msg);
+                            $("#class_container").load(location.href + " #class_container");
+                        } else {
+                            toastr.error(data.msg);
+                        }
+                    },
+                    error: function(xhr) {
+                        toastr.error("Terjadi kesalahan saat menghapus exercise");
+                    }
+                });
+            }
         });
     </script>
 @endsection

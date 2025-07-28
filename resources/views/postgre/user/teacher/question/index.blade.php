@@ -316,5 +316,33 @@
                 }
             });
         });
+
+        $(document).on("click", "#questionDeleteBtn", function() {
+            const question_id = $(this).data("id");
+            const url = "{{ route('teacher.question.delete') }}";
+            
+            if (confirm("Apakah Anda yakin ingin menghapus question ini? Semua data terkait akan ikut terhapus.")) {
+                $.ajax({
+                    url: url,
+                    method: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        question_id: question_id
+                    },
+                    dataType: "json",
+                    success: function(data) {
+                        if (data.code == 1) {
+                            toastr.success(data.msg);
+                            $('#tabel_soal').DataTable().ajax.reload(null, false);
+                        } else {
+                            toastr.error(data.msg);
+                        }
+                    },
+                    error: function(xhr) {
+                        toastr.error("Terjadi kesalahan saat menghapus question");
+                    }
+                });
+            }
+        });
     </script>
 @endsection
